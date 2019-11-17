@@ -8,23 +8,14 @@ const port = 3000;
 const pool = new Pool({
     connectionString: connectionString,
 });
+
 function getAllUsers(){
     pool.query('SELECT * FROM Users', (err, res) => {
         console.log(err, res);
         pool.end();
     });
 }
-/*
-const client = new Client({
-    connectionString: connectionString,
-});
-client.connect();
 
-client.query('SELECT * FROM Users', (err, res) => {
-    console.log(err, res);
-    client.end();
-})
-*/
 app.use(bodyParser.json());
 app.use(
     bodyParser.urlencoded({
