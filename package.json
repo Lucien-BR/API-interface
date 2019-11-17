@@ -1,14 +1,14 @@
 {
   "name": "api-interface",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "API pour nos systemes d'improvisation.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Lucien Blais Regout",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
