@@ -3,7 +3,6 @@ const { Pool, Client } = require('pg');
 module.exports =
 class MyPostgres {
 
-  test = null;
   constructor() {
     this.connectionString = "psotgresql://Lucien:lu-db@35.245.152.215:5432/impro-bd";
     this.pool = new Pool({ connectionString: this.connectionString });

@@ -12,8 +12,8 @@ app.use(bodyParser.json());
 // Ne pas confondre err/res du module EXPRESS avec ceux du modul PG
 
 // Faire dequoi avec le default one.. idk
-app.get('/', (request, response) => {
-    response.json({info: 'Node.js, Express, PG'})
+app.get('/test', (request, response) => {
+    response.json({info: 'Ceci fonctionne!'})
 });
 
 fetchAllUser = async function() {
