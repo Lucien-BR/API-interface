@@ -1,4 +1,4 @@
-const { Pool, Client } = require('pg');
+const { Pool } = require('pg');
 
 module.exports =
 class MyPostgres {
@@ -6,18 +6,25 @@ class MyPostgres {
   constructor() {
     this.connectionString = "psotgresql://Lucien:lu-db@35.245.152.215:5432/impro-bd";
     this.pool = new Pool({ connectionString: this.connectionString });
-    this.client = new Client({ connectionString: this.connectionString });
   }
 
   async getAllUsers() {
+      var temp; // hmm
+      const client = await this.pool.connect();
+      await client
+        .query('SELECT * FROM Users')
+        .then(result => temp = result) // probablement redondant
+        .catch(e => console.error(e.stack));
+
+      /*
       this.client.connect();
-      var temp;
       await this.client
         .query("SELECT * FROM Users")
         .then(result => temp = result)
         .catch(e => console.error(e.stack))
         .then(() => this.client.end());
-      //resolve(result.rows);
+        
+      */
       return  temp;
   }
 
