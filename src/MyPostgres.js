@@ -1,19 +1,25 @@
-const { Pool } = require('pg');
+const { Pool, Client } = require('pg');
 
 module.exports =
 class MyPostgres {
 
+  test = null;
   constructor() {
     this.connectionString = "psotgresql://Lucien:lu-db@35.245.152.215:5432/impro-bd";
     this.pool = new Pool({ connectionString: this.connectionString });
+    this.client = new Client({ connectionString: this.connectionString });
   }
 
-  getAllUsers() {
-      const Query = "SELECT * FROM Users";
-      this.pool.query(Query, (err, res) => {
-          console.log(err, res.rows);
-          return (err, res);
-      });
+  async getAllUsers() {
+      this.client.connect();
+      var temp;
+      await this.client
+        .query("SELECT * FROM Users")
+        .then(result => temp = result)
+        .catch(e => console.error(e.stack))
+        .then(() => this.client.end());
+      //resolve(result.rows);
+      return  temp;
   }
 
   removeUser(email) {

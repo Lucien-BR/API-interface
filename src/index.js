@@ -16,11 +16,20 @@ app.get('/', (request, response) => {
     response.json({info: 'Node.js, Express, PG'})
 });
 
-app.get("/users", function(req,res) {
-    res.end(MyPG.getAllUsers());
+fetchAllUser = async function() {
+    let returnData = [];
+    returnData = await MyPG.getAllUsers();
+    //console.log(returnData); // TOUT
+    return returnData;
+}
+
+app.get("/users", async (req,res) => {
+    let returnData = await fetchAllUser();
+    console.log(returnData); // fkall
+    res.status(200).json({ users: returnData.rows });
 });
 
-app.get('/adduser/:email/:nom/:prenom/:telephone/:status', function(req,res) {
+app.get('/adduser/:email/:nom/:prenom/:telephone/:status', (req,res) => {
     var email       = req.params.email;
     var nom         = req.params.nom;
     var prenom      = req.params.prenom;
@@ -30,7 +39,7 @@ app.get('/adduser/:email/:nom/:prenom/:telephone/:status', function(req,res) {
     res.end(MyPG.errMessage(state));
 });
 
-app.get('/removeuser/:email', function(req, res) {
+app.get('/removeuser/:email', (req, res) => {
     var email       = req.params.email;
     var state       = MyPG.removeUser(email);
     res.end(MyPG.errMessage(state));
