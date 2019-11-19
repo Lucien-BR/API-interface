@@ -13,7 +13,7 @@ class MyPostgres {
       const client = await this.pool.connect();
       await client
         .query('SELECT * FROM Users')
-        .then(result => temp = result)
+        .then(result => temp = result) // prob. redondant
         .catch(e => {console.error(e.stack); code = 1;});
       client.release();
       return  [code, temp];
@@ -30,47 +30,27 @@ class MyPostgres {
     return  [code, temp];
   }
 
-  async removeUser(email) {
-      var er = null, code =0;
-      ;(async () => {
-          const client = await this.pool.connect();
-          try {
-            await client.query('BEGIN');
-            const queryText = 'DELETE FROM Users * WHERE email = $1';
-            const userValue = [email];
-            await client.query(queryText, userValue);
-            await client.query('COMMIT');
-          } catch (e) {
-            await client.query('ROLLBACK');
-            code = 1;
-            throw e;
-          } finally {
-            client.release();
-          }
-        })().catch(e => {console.error(e.stack); er = e});
-      return [code, this.errMessage(er)];
+  async getAllEvents() {
+    var code = 0, temp;
+    const client = await this.pool.connect();
+    await client
+      .query('SELECT * FROM Events')
+      .then(result => temp = result) // prob. redondant
+      .catch(e => {console.error(e.stack); code = 1;});
+    client.release();
+    return  [code, temp];
   }
 
-  async removeCred(email) {
-    var er = null, code =0;
-    ;(async () => {
-        const client = await this.pool.connect();
-        try {
-          await client.query('BEGIN');
-          const queryText = 'DELETE FROM Credentials * WHERE email = $1';
-          const userValue = [email];
-          await client.query(queryText, userValue);
-          await client.query('COMMIT');
-        } catch (e) {
-          await client.query('ROLLBACK');
-          code = 1;
-          throw e;
-        } finally {
-          client.release();
-        }
-      })().catch(e => {console.error(e.stack); er = e});
-    return [code, this.errMessage(er)];
-}
+  async getAllTeams() {
+    var code = 0, temp;
+    const client = await this.pool.connect();
+    await client
+      .query('SELECT * FROM Teams')
+      .then(result => temp = result) // prob. redondant
+      .catch(e => {console.error(e.stack); code = 1;});
+    client.release();
+    return  [code, temp];
+  }
 
   async addUser(email, nom, prenom, telephone, status) {
       var er = null, code = 0;
@@ -101,6 +81,48 @@ class MyPostgres {
           await client.query('BEGIN');
           const queryText = 'INSERT INTO Credentials(email, psw, status) VALUES($1, $2, $3)';
           const queryValues = [email, psw, status];
+          await client.query(queryText, queryValues);
+          await client.query('COMMIT');
+        } catch (e) {
+          code = 1;
+          await client.query('ROLLBACK');
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
+  async addEvent(nomEvent, nomEcole, nbEquipes, dateDebut, dateFin) {
+    var er = null, code = 0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          const queryText = "INSERT INTO Events(nomEvenement, nomEcole, nbEquipes, dateDebut, dateFin) VALUES($1, $2, $3, $4, $5)";
+          const queryValues = [nomEvent, nomEcole, nbEquipes, dateDebut, dateFin];
+          await client.query(queryText, queryValues);
+          await client.query('COMMIT');
+        } catch (e) {
+          code = 1;
+          await client.query('ROLLBACK');
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
+  async addTeam(nomEquipe, nomEcole, nbJoueurs) {
+    var er = null, code = 0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          const queryText = "INSERT INTO Teams(nomEquipe, nomEcole, nbJoueurs) VALUES($1, $2, $3)";
+          const queryValues = [nomEquipe, nomEcole, nbJoueurs];
           await client.query(queryText, queryValues);
           await client.query('COMMIT');
         } catch (e) {
@@ -178,6 +200,135 @@ class MyPostgres {
       })().catch(e => {console.error(e.stack); er = e});
     return [code, this.errMessage(er)];
   }
+  
+  // TODO: at the moment, the nomEvent is the PK_0, add a serialized idEvent, to allow nam modifications.
+  async updateEvent(nomEvent, nomEcole, nbEquipes, dateDebut, dateFin) {
+    var er = null, code = 0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          const queryText = 'UPDATE Events SET nomEcole = $2, nbEquipes = $3, dateDebut = $4, dateFin = $5 WHERE nomEvenement = $1';
+          const queryValues = [nomEvent, nomEcole, nbEquipes, dateDebut, dateFin];
+          await client.query(queryText, queryValues);
+          await client.query('COMMIT');
+        } catch (e) {
+          await client.query('ROLLBACK');
+          code = 1;
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
+  async updateTeam(nomEquipe, nomEcole, nbJoueurs, estInscrit, aPaye, etatDepot) {
+    var er = null, code = 0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          const queryText = 'UPDATE Teams SET nomEcole = $2, nbJoueurs = $3, estInscrit = $4, aPaye = $5, etatDepot = $6 WHERE nomEquipe = $1';
+          const queryValues = [nomEquipe, nomEcole, nbJoueurs, estInscrit, aPaye, etatDepot];
+          //console.log(queryValues);
+          await client.query(queryText, queryValues);
+          await client.query('COMMIT');
+        } catch (e) {
+          await client.query('ROLLBACK');
+          code = 1;
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
+  async removeUser(email) {
+    var er = null, code =0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          const queryText = 'DELETE FROM Users * WHERE email = $1';
+          const userValue = [email];
+          await client.query(queryText, userValue);
+          await client.query('COMMIT');
+        } catch (e) {
+          await client.query('ROLLBACK');
+          code = 1;
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
+  async removeCred(email) {
+    var er = null, code =0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          const queryText = 'DELETE FROM Credentials * WHERE email = $1';
+          const userValue = [email];
+          await client.query(queryText, userValue);
+          await client.query('COMMIT');
+        } catch (e) {
+          await client.query('ROLLBACK');
+          code = 1;
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
+  async removeEvent(nomEvent) {
+    var er = null, code =0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          const queryText = 'DELETE FROM Events * WHERE nomEvenement = $1';
+          const userValue = [nomEvent];
+          await client.query(queryText, userValue);
+          await client.query('COMMIT');
+        } catch (e) {
+          await client.query('ROLLBACK');
+          code = 1;
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
+  async removeTeam(nomEquipe) {
+    var er = null, code =0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          const queryText = 'DELETE FROM Teams * WHERE nomEquipe = $1';
+          const userValue = [nomEquipe];
+          await client.query(queryText, userValue);
+          await client.query('COMMIT');
+        } catch (e) {
+          await client.query('ROLLBACK');
+          code = 1;
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
 
   errMessage(er) {
     if (er == null){    
@@ -188,4 +339,5 @@ class MyPostgres {
       return("Task failed, rolling back. Modifications were reverted.\n\n Have fun with the stack tracer! \n\n"+er.stack);
     }
   }
+
 }
