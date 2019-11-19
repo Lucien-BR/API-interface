@@ -137,16 +137,24 @@ app.post('/addMatchPart/:date/:lieu/:equipe1/:equipe2', async (req,res) => {
 });
 
 // NEVER modify the email. This api won't allow it.
-app.post('/updateUser/:email/:nom/:prenom/:telephone/:status', async (req,res) => {
+app.post('/updateUser/:email/:nom/:prenom/:telephone', async (req,res) => {
     var email       = req.params.email;
     var nom         = req.params.nom;
     var prenom      = req.params.prenom;
     var telephone   = req.params.telephone;
+    let pgRes       = await MyPG.updateUser(email, nom, prenom, telephone);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("\n "+code+" "+pgRes[1]);
+});
+
+app.post('/updateUserStatus/:email/:status', async (req,res) => {
+    var email       = req.params.email;
     var status      = req.params.status;
-    let pgRes       = await MyPG.updateUser(email, nom, prenom, telephone, status);
+    let pgRes       = await MyPG.updateUserStatus(email, status);
     let pgRes2      = await MyPG.updateCredStatus(email, status);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0 && pgRes2[0]) { code = 406; } // Not Acceptable
+    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).end("\n "+code+" "+pgRes2[1]);
 });
 
