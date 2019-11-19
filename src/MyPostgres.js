@@ -4,7 +4,9 @@ const Creds = require('./Creds.js');
 
 module.exports =
 class MyPostgres {
-
+  /*
+  ** CRITICALS:BEGIN
+  */
   constructor() {
     this.connectionString = "psotgresql://Lucien:lu-db@35.245.152.215:5432/impro-bd";
     this.pool = new Pool({ connectionString: this.connectionString });
@@ -12,8 +14,24 @@ class MyPostgres {
     this.creds = new Creds(this.pool);
   }
 
+  errMessage(er) {
+    if (er == null){    
+      return("Task completed succesfully.\n");
+    } 
+    else {
+      console.log(er.stack);
+      return("Task failed, rolling back. Modifications were reverted.\n\n Have fun with the stack tracer! \n\n"+er.stack);
+    }
+  }
+  /*
+  ** CRITICALS:END
+  */
 
-  // USERS:BEGIN
+
+
+  /*
+  ** USERS:BEGIN
+  */
   async getAllUsers() {
     return await this.users.getAllUsers();
   }
@@ -37,10 +55,14 @@ class MyPostgres {
     let pgRes = await this.users.removeUser(email);
     return [pgRes[0], this.errMessage(pgRes[1])];
   }
-  // USERS:END
+  /*
+  ** USERS:END
+  */
 
 
-  // CREDS:BEGIN
+  /*
+  ** CREDENTIALS:BEGIN
+  */
   async getAllCreds() {
     return await this.creds.getAllCreds();
   }
@@ -64,11 +86,22 @@ class MyPostgres {
     let pgRes = await this.creds.removeCred(email);
     return [pgRes[0], this.errMessage(pgRes[1])];
   }
-  // CREDS:END
+  /*
+  ** CREDENTIALS:BEGIN
+  */
 
 
-  // MISCEALLANOUS / DEPRECATED
 
+  /*
+  ==============================================================================================
+  ==============================================================================================
+  */
+
+
+
+  /*
+  ** DEPRECATED:BEGIN
+  */
   async getAllEvents() {
     var code = 0, temp;
     const client = await this.pool.connect();
@@ -188,11 +221,6 @@ class MyPostgres {
     return [code, this.errMessage(er)];
   }
 
-
-
-
-  
-  // TODO: at the moment, the nomEvent is the PK_0, add a serialized idEvent, to allow nam modifications.
   async updateEvent(nomEvent, nomEcole, nbEquipes, dateDebut, dateFin) {
     var er = null, code = 0;
     ;(async () => {
@@ -236,7 +264,6 @@ class MyPostgres {
     return [code, this.errMessage(er)];
   }
 
-
   async removeEvent(nomEvent) {
     var er = null, code =0;
     ;(async () => {
@@ -278,16 +305,11 @@ class MyPostgres {
       })().catch(e => {console.error(e.stack); er = e});
     return [code, this.errMessage(er)];
   }
-
-
-  errMessage(er) {
-    if (er == null){    
-      return("Task completed succesfully.\n");
-    } 
-    else {
-      console.log(er.stack);
-      return("Task failed, rolling back. Modifications were reverted.\n\n Have fun with the stack tracer! \n\n"+er.stack);
-    }
-  }
+  /*
+  ** DEPRECATED:END 
+  */
 
 }
+/*
+** END OF FILE
+*/

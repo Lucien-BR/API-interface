@@ -10,35 +10,64 @@ app.use(bodyParser.text({ type: 'text/html' })); // Mainly this one
 app.use(bodyParser.urlencoded({ extended: false, }));
 app.use(bodyParser.json());
 
-// Do something with the default one.. idk
+
+
+/*
+** DEAFULT:BEGIN
+*/
 app.get('/', (request, response) => {
     response.status(200).json(
-        {Default: 'Voici notre API!', routes: {
-            GET: {
-                Default: '/',
-                Voir_Tout_Utilisateurs: '/users',
-                Voir_Tout_Identifiants: '/creds',
-                Voir_Tout_Evenements: '/events',
-                Voir_Tout_Les_Equipes: '/teams'
-            },
-            POST: {
-                Ajouter_Utilisateur: '/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse>',
-                Ajouter_Evenement: '/addEvent/<nomEvent>/<nomEcole>/<nbEquipes>/<dateDebut>/<dateFin>',
-                Ajouter_Equipe: '/addTeam/<nomEquipe>/<nomEcole>/<nbJoueurs>',
-                Metre_A_Jour_Utilisateur: '/updateUser/<email>/<nom>/<prenom>/<telephone>/<status>',
-                Metre_A_Jour_Mot_De_Passe: '/updatePsw/<email>/<nouveauMotDePasse>',
-                Metre_A_Jour_Evenement: "/updateEvent/<nomEvent>/<nomEcole>/<nbEquipes>/<dateDebut>/<dateFin>",
-                Metre_A_Jour_Equipe: '/updateTeam/<nomEquipe>/<nomEcole>/<nbJoueurs>/<estInscrit>/<aPaye>/<etatDepot>',
-                Retirer_Utilisateur: '/removeUser/<email>',
-                Retirer_Evenement: '/removeEvent/<nomEvenement>',
-                Retirer_Equipe: '/removeTeam/<nomEquipe>'
+        {
+            Default: '/',
+            Info: 'Voici notre API!',
+            Routes: '/gateways/<parameters>',
+            Tables: {
+                Classes: 'Methods',
+                Users: {
+                    GET:{
+                        Voir_Tout_Utilisateurs: '/users'
+                    },
+                    POST:{
+                        Ajouter_Utilisateur: '/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse>',
+                        Metre_A_Jour_Utilisateur: '/updateUser/<email>/<nom>/<prenom>/<telephone>/<status>', 
+                        Metre_A_Jour_Status: '/updateStatus/<email>/<status>',
+                        Retirer_Utilisateur: '/removeUser/<email>'
+                    }
+                },
+                Credentials: {
+                    GET: {
+                        Voir_Tout_Identifiants: '/creds'
+                    },
+                    POST: {
+                        Metre_A_Jour_Mot_De_Passe: '/updatePsw/<email>/<nouveauMotDePasse>',
+                    }
+                },
+                Deprecated: {
+                    GET: {
+                        Voir_Tout_Evenements: '/events',
+                        Voir_Tout_Les_Equipes: '/teams'
+                    },
+                    POST: {
+                        Ajouter_Evenement: '/addEvent/<nomEvent>/<nomEcole>/<nbEquipes>/<dateDebut>/<dateFin>',
+                        Ajouter_Equipe: '/addTeam/<nomEquipe>/<nomEcole>/<nbJoueurs>',
+                        Metre_A_Jour_Evenement: "/updateEvent/<nomEvent>/<nomEcole>/<nbEquipes>/<dateDebut>/<dateFin>",
+                        Metre_A_Jour_Equipe: '/updateTeam/<nomEquipe>/<nomEcole>/<nbJoueurs>/<estInscrit>/<aPaye>/<etatDepot>',
+                        Retirer_Evenement: '/removeEvent/<nomEvenement>',
+                        Retirer_Equipe: '/removeTeam/<nomEquipe>'
+                }
             }
         }
     })
 });
+/*
+** DEFAULT:END
+*/
 
-// TODO: Un-Fuck les funcitons ajout Matchs, faire les updates, removes et delete.
 
+
+/*
+** USERS:BEGIN
+*/
 app.get("/users", async (req,res) => {
     let pgRes       = await MyPG.getAllUsers();
     var code        = 200; // OK
@@ -46,6 +75,59 @@ app.get("/users", async (req,res) => {
     res.status(code).json({ users: pgRes[1].rows });
 });
 
+app.post('/addUser/:email/:nom/:prenom/:telephone/:status/:psw', async (req,res) => {
+    var email       = req.params.email;
+    var nom         = req.params.nom;
+    var prenom      = req.params.prenom;
+    var telephone   = req.params.telephone;
+    var status      = req.params.status;
+    var psw         = req.params.psw;
+    let pgRes       = await MyPG.addUser(email, nom, prenom, telephone, status);
+    let pgRes2      = await MyPG.addCred(email, psw, status);
+    var code        = 201; // Created
+    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406;} // Not Acceptable
+    res.status(code).end("\n "+code+" "+pgRes2[1]);
+});
+
+// NEVER modify the email. This api won't allow it.
+app.post('/updateUser/:email/:nom/:prenom/:telephone', async (req,res) => {
+    var email       = req.params.email;
+    var nom         = req.params.nom;
+    var prenom      = req.params.prenom;
+    var telephone   = req.params.telephone;
+    let pgRes       = await MyPG.updateUser(email, nom, prenom, telephone);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("\n "+code+" "+pgRes[1]);
+});
+
+app.post('/updateStatus/:email/:status', async (req,res) => {
+    var email       = req.params.email;
+    var status      = req.params.status;
+    let pgRes       = await MyPG.updateUserStatus(email, status);
+    let pgRes2      = await MyPG.updateCredStatus(email, status);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("\n "+code+" "+pgRes2[1]);
+});
+
+app.post('/removeUser/:email', async (req, res) => {
+    var email       = req.params.email;
+    let pgRes       = await MyPG.removeCred(email);
+    let pgRes2      = await MyPG.removeUser(email);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 409; } // Conflict
+    res.status(code).end("\n "+code+" "+pgRes2[1]);
+});
+/*
+** USERS:END
+*/
+
+
+
+/*
+** CREDENTIALS:BEGIN
+*/
 app.get("/creds", async (req,res) => {
     let pgRes       = await MyPG.getAllCreds();
     var code        = 200; // OK
@@ -53,6 +135,47 @@ app.get("/creds", async (req,res) => {
     res.status(code).json({ credentials: pgRes[1].rows });
 });
 
+app.post('/updatePsw/:email/:psw', async (req,res) => {
+    var email       = req.params.email;
+    var psw         = req.params.psw;
+    let pgRes       = await MyPG.updateCredPsw(email, psw);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("\n "+code+" "+pgRes[1]);
+});
+/*
+** CREDS:END
+*/
+
+
+
+/*
+** CRITICALS:BEGIN
+*/
+app.get('/*', (req,res) =>{
+    res.status(501);
+})
+
+// Basicly allows this api to wait for requests.
+app.listen(port, () => {
+  console.log('Listening on http://localhost:'+port);
+});
+/*
+** CRITICALS:END
+*/
+
+
+
+/*
+==============================================================================================
+==============================================================================================
+*/
+
+
+
+/*
+** DEPRECATED:BEGIN
+*/
 app.get('/events', async (req,res) => {
     let pgRes       = await MyPG.getAllEvents();
     var code        = 200; // OK
@@ -73,20 +196,6 @@ app.get('/matchs', async (req,res) => {
     if (pgRes[0] != 0) { code = 400; } // Bad Request
     res.status(code).json({ matchs: pgRes[1].rows });
 })
-
-app.post('/addUser/:email/:nom/:prenom/:telephone/:status/:psw', async (req,res) => {
-    var email       = req.params.email;
-    var nom         = req.params.nom;
-    var prenom      = req.params.prenom;
-    var telephone   = req.params.telephone;
-    var status      = req.params.status; // defaults to 'D'
-    var psw         = req.params.psw;
-    let pgRes       = await MyPG.addUser(email, nom, prenom, telephone, status);
-    let pgRes2      = await MyPG.addCred(email, psw, status);
-    var code        = 201; // Created
-    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406;} // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes2[1]); //.2 because it can't compile if the first one cannot.
-});
 
 app.post('/addEvent/:nomEvent/:nomEcole/:nbEquipes/:dateDebut/:dateFin', async (req,res) => {
     var nomEvent    = req.params.nomEvent;
@@ -136,37 +245,6 @@ app.post('/addMatchPart/:date/:lieu/:equipe1/:equipe2', async (req,res) => {
     res.status(code).end("\n "+code+" "+pgRes[1]);
 });
 
-// NEVER modify the email. This api won't allow it.
-app.post('/updateUser/:email/:nom/:prenom/:telephone', async (req,res) => {
-    var email       = req.params.email;
-    var nom         = req.params.nom;
-    var prenom      = req.params.prenom;
-    var telephone   = req.params.telephone;
-    let pgRes       = await MyPG.updateUser(email, nom, prenom, telephone);
-    var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-
-app.post('/updateUserStatus/:email/:status', async (req,res) => {
-    var email       = req.params.email;
-    var status      = req.params.status;
-    let pgRes       = await MyPG.updateUserStatus(email, status);
-    let pgRes2      = await MyPG.updateCredStatus(email, status);
-    var code        = 202; // Accepted
-    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes2[1]);
-});
-
-app.post('/updatePsw/:email/:psw', async (req,res) => {
-    var email       = req.params.email;
-    var psw         = req.params.psw;
-    let pgRes       = await MyPG.updateCredPsw(email, psw);
-    var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-
 app.post('/updateEvent/:nomEvent/:nomEcole/:nbEquipes/:dateDebut/:dateFin', async (req,res) => {
     var nomEvent    = req.params.nomEvent;
     var nomEcole    = req.params.nomEcole;
@@ -192,15 +270,6 @@ app.post('/updateTeam/:nomEquipe/:nomEcole/:nbJoueurs/:estInscrit/:aPaye/:etatDe
     res.status(code).end("\n "+code+" "+pgRes[1]);
 });
 
-app.post('/removeUser/:email', async (req, res) => {
-    var email       = req.params.email;
-    let pgRes       = await MyPG.removeCred(email);
-    let pgRes2      = await MyPG.removeUser(email);
-    var code        = 202; // Accepted
-    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 409; } // Conflict
-    res.status(code).end("\n "+code+" "+pgRes2[1]);
-});
-
 app.post('/removeEvent/:nomEvent', async (req,res) => {
     var nomEvent    = req.params.nomEvent;
     let pgRes       = await MyPG.removeEvent(nomEvent);
@@ -216,12 +285,6 @@ app.post('/removeTeam/:nomEquipe', async (req,res) => {
     if (pgRes[0] != 0) { code = 409; } // Not Acceptable
     res.status(code).end("\n "+code+" "+pgRes[1]);
 });
-
-app.get('/*', (req,res) =>{
-    res.status(501);
-})
-
-// Basicly allows this api to wait for requests.
-app.listen(port, () => {
-  console.log('Listening on http://localhost:'+port);
-});
+/*
+** DEPRECATED:END
+*/
