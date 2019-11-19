@@ -37,6 +37,8 @@ app.get('/', (request, response) => {
     })
 });
 
+// TODO: Un-Fuck les funcitons ajout Matchs, faire les updates, removes et delete.
+
 app.get("/users", async (req,res) => {
     let pgRes       = await MyPG.getAllUsers();
     var code        = 200; // OK
@@ -63,6 +65,13 @@ app.get('/teams', async (req,res) => {
     var code        = 200; // OK
     if (pgRes[0] != 0) { code = 400; } // Bad Request
     res.status(code).json({ teams: pgRes[1].rows });
+})
+
+app.get('/matchs', async (req,res) => {
+    let pgRes       = await MyPG.getAllMatchs();
+    var code        = 200; // OK
+    if (pgRes[0] != 0) { code = 400; } // Bad Request
+    res.status(code).json({ matchs: pgRes[1].rows });
 })
 
 app.post('/addUser/:email/:nom/:prenom/:telephone/:status/:psw', async (req,res) => {
@@ -99,7 +108,33 @@ app.post('/addTeam/:nomEquipe/:nomEcole/:nbJoueurs', async (req,res) => {
     var code        = 201; // Created
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).end("\n "+code+" "+pgRes[1]);
-})
+});
+
+app.post('/addMatchFull/:date/:lieu/:equipe1/:scoreEquipe1/:penalitesEquipe1/:equipe2/:scoreEquipe2/:penalitesEquipe2', async (req,res) => {
+    var date        = req.params.date;
+    var lieu        = req.params.lieu;
+    var equipe1     = req.params.equipe1;
+    var scEquipe1   = req.params.scoreEquipe1;
+    var penEquipe1  = req.params.penalitesEquipe1;
+    var equipe2     = req.params.equipe2;
+    var scEquipe2   = req.params.scoreEquipe2;
+    var penEquipe2  = req.params.penalitersEquipe2;
+    let pgRes       = await MyPG.addMatchFull(date, lieu, equipe1, scEquipe1, penEquipe1, equipe2, scEquipe2, penEquipe2);
+    var code        = 201; // Created
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("\n "+code+" "+pgRes[1]);
+});
+
+app.post('/addMatchPart/:date/:lieu/:equipe1/:equipe2', async (req,res) => {
+    var date        = req.params.date;
+    var lieu        = req.params.lieu;
+    var equipe1     = req.params.equipe1;
+    var equipe2     = req.params.equipe2;
+    let pgRes       = await MyPG.addMatchPart(date, lieu, equipe1, equipe2);
+    var code        = 201; // Created
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("\n "+code+" "+pgRes[1]);
+});
 
 // NEVER modify the email. This api won't allow it.
 app.post('/updateUser/:email/:nom/:prenom/:telephone/:status', async (req,res) => {
@@ -147,7 +182,7 @@ app.post('/updateTeam/:nomEquipe/:nomEcole/:nbJoueurs/:estInscrit/:aPaye/:etatDe
     var code        = 202; // Accepted
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).end("\n "+code+" "+pgRes[1]);
-})
+});
 
 app.post('/removeUser/:email', async (req, res) => {
     var email       = req.params.email;

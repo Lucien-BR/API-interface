@@ -52,6 +52,17 @@ class MyPostgres {
     return  [code, temp];
   }
 
+  async getAllMatchs() {
+    var code = 0, temp;
+    const client = await this.pool.connect();
+    await client
+      .query('SELECT * FROM Matchs')
+      .then(result => temp = result) // prob. redondant
+      .catch(e => {console.error(e.stack); code = 1;});
+    client.release();
+    return  [code, temp];
+  }
+
   async addUser(email, nom, prenom, telephone, status) {
       var er = null, code = 0;
       ;(async () => {
@@ -123,6 +134,50 @@ class MyPostgres {
           await client.query('BEGIN');
           const queryText = "INSERT INTO Teams(nomEquipe, nomEcole, nbJoueurs) VALUES($1, $2, $3)";
           const queryValues = [nomEquipe, nomEcole, nbJoueurs];
+          await client.query(queryText, queryValues);
+          await client.query('COMMIT');
+        } catch (e) {
+          code = 1;
+          await client.query('ROLLBACK');
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
+  async addMatchFull(date, lieu, equipe1, scoreEquipe1, penalitesEquipe1, equipe2, scoreEquipe2, penalitesEquipe2) {
+    var er = null, code = 0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          // '2019-03-08 13:00:00'
+          const queryText = "INSERT INTO Matchs(date, lieu, equipe1, scoreEquipe1, penalitesEquipe1, equipe2, scoreEquipe2, penalitesEquipe2) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
+          const queryValues = [date, lieu, equipe1, scoreEquipe1, penalitesEquipe1, equipe2, scoreEquipe2, penalitesEquipe2];
+          await client.query(queryText, queryValues);
+          await client.query('COMMIT');
+        } catch (e) {
+          code = 1;
+          await client.query('ROLLBACK');
+          throw e;
+        } finally {
+          client.release();
+        }
+      })().catch(e => {console.error(e.stack); er = e});
+    return [code, this.errMessage(er)];
+  }
+
+  async addMatchPart(date, lieu, equipe1, equipe2) {
+    var er = null, code = 0;
+    ;(async () => {
+        const client = await this.pool.connect();
+        try {
+          await client.query('BEGIN');
+          // '2019-03-08 13:00:00'
+          const queryText = "INSERT INTO Matchs(date, lieu, equipe1, equipe2) VALUES ($1, $2, $3, $4)";
+          const queryValues = [date, lieu, equipe1, equipe2];
           await client.query(queryText, queryValues);
           await client.query('COMMIT');
         } catch (e) {
