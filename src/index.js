@@ -41,23 +41,10 @@ app.get('/', (request, response) => {
                     POST: {
                         Metre_A_Jour_Mot_De_Passe: '/updatePsw/<email>/<nouveauMotDePasse>',
                     }
-                },
-                Deprecated: {
-                    GET: {
-                        Voir_Tout_Evenements: '/events',
-                        Voir_Tout_Les_Equipes: '/teams'
-                    },
-                    POST: {
-                        Ajouter_Evenement: '/addEvent/<nomEvent>/<nomEcole>/<nbEquipes>/<dateDebut>/<dateFin>',
-                        Ajouter_Equipe: '/addTeam/<nomEquipe>/<nomEcole>/<nbJoueurs>',
-                        Metre_A_Jour_Evenement: "/updateEvent/<nomEvent>/<nomEcole>/<nbEquipes>/<dateDebut>/<dateFin>",
-                        Metre_A_Jour_Equipe: '/updateTeam/<nomEquipe>/<nomEcole>/<nbJoueurs>/<estInscrit>/<aPaye>/<etatDepot>',
-                        Retirer_Evenement: '/removeEvent/<nomEvenement>',
-                        Retirer_Equipe: '/removeTeam/<nomEquipe>'
                 }
             }
         }
-    })
+    )
 });
 /*
 ** DEFAULT:END
@@ -162,129 +149,4 @@ app.listen(port, () => {
 });
 /*
 ** CRITICALS:END
-*/
-
-
-
-/*
-==============================================================================================
-==============================================================================================
-*/
-
-
-
-/*
-** DEPRECATED:BEGIN
-*/
-app.get('/events', async (req,res) => {
-    let pgRes       = await MyPG.getAllEvents();
-    var code        = 200; // OK
-    if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json({ events: pgRes[1].rows });
-});
-
-app.get('/teams', async (req,res) => {
-    let pgRes       = await MyPG.getAllTeams();
-    var code        = 200; // OK
-    if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json({ teams: pgRes[1].rows });
-})
-
-app.get('/matchs', async (req,res) => {
-    let pgRes       = await MyPG.getAllMatchs();
-    var code        = 200; // OK
-    if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json({ matchs: pgRes[1].rows });
-})
-
-app.post('/addEvent/:nomEvent/:nomEcole/:nbEquipes/:dateDebut/:dateFin', async (req,res) => {
-    var nomEvent    = req.params.nomEvent;
-    var nomEcole    = req.params.nomEcole;
-    var nbEquipes   = req.params.nbEquipes;
-    var dateDebut   = req.params.dateDebut;
-    var dateFin     = req.params.dateFin;
-    let pgRes       = await MyPG.addEvent(nomEvent, nomEcole, nbEquipes, dateDebut, dateFin);
-    var code        = 201; // Created
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-
-app.post('/addTeam/:nomEquipe/:nomEcole/:nbJoueurs', async (req,res) => {
-    var nomEquipe   = req.params.nomEquipe;
-    var nomEcole    = req.params.nomEcole;
-    var nbJoueurs    = req.params.nbJoueurs;
-    let pgRes       = await MyPG.addTeam(nomEquipe, nomEcole, nbJoueurs);
-    var code        = 201; // Created
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-
-app.post('/addMatchFull/:date/:lieu/:equipe1/:scoreEquipe1/:penalitesEquipe1/:equipe2/:scoreEquipe2/:penalitesEquipe2', async (req,res) => {
-    var date        = req.params.date;
-    var lieu        = req.params.lieu;
-    var equipe1     = req.params.equipe1;
-    var scEquipe1   = req.params.scoreEquipe1;
-    var penEquipe1  = req.params.penalitesEquipe1;
-    var equipe2     = req.params.equipe2;
-    var scEquipe2   = req.params.scoreEquipe2;
-    var penEquipe2  = req.params.penalitersEquipe2;
-    let pgRes       = await MyPG.addMatchFull(date, lieu, equipe1, scEquipe1, penEquipe1, equipe2, scEquipe2, penEquipe2);
-    var code        = 201; // Created
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-
-app.post('/addMatchPart/:date/:lieu/:equipe1/:equipe2', async (req,res) => {
-    var date        = req.params.date;
-    var lieu        = req.params.lieu;
-    var equipe1     = req.params.equipe1;
-    var equipe2     = req.params.equipe2;
-    let pgRes       = await MyPG.addMatchPart(date, lieu, equipe1, equipe2);
-    var code        = 201; // Created
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-
-app.post('/updateEvent/:nomEvent/:nomEcole/:nbEquipes/:dateDebut/:dateFin', async (req,res) => {
-    var nomEvent    = req.params.nomEvent;
-    var nomEcole    = req.params.nomEcole;
-    var nbEquipes   = req.params.nbEquipes;
-    var dateDebut   = req.params.dateDebut;
-    var dateFin     = req.params.dateFin;
-    let pgRes       = await MyPG.updateEvent(nomEvent, nomEcole, nbEquipes, dateDebut, dateFin);
-    var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-
-app.post('/updateTeam/:nomEquipe/:nomEcole/:nbJoueurs/:estInscrit/:aPaye/:etatDepot', async (req, res) => {
-    var nomEquipe   = req.params.nomEquipe;
-    var nomEcole    = req.params.nomEcole;
-    var nbJoueurs   = req.params.nbJoueurs;
-    var estInscrit  = req.params.estInscrit;
-    var aPaye       = req.params.aPaye;
-    var etatDepot   = req.params.etatDepot;
-    let pgRes       = await MyPG.updateTeam(nomEquipe, nomEcole, nbJoueurs, estInscrit, aPaye, etatDepot);
-    var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-
-app.post('/removeEvent/:nomEvent', async (req,res) => {
-    var nomEvent    = req.params.nomEvent;
-    let pgRes       = await MyPG.removeEvent(nomEvent);
-    var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 409; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-
-app.post('/removeTeam/:nomEquipe', async (req,res) => {
-    var nomEquipe    = req.params.nomEquipe;
-    let pgRes       = await MyPG.removeTeam(nomEquipe);
-    var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 409; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
-});
-/*
-** DEPRECATED:END
 */
