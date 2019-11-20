@@ -1,3 +1,14 @@
+/**
+ * class Users :
+ * 
+ * getAllUsers()
+ * addUser()
+ * updateUser()
+ * updateUserStatus()
+ * removeUser()
+ * 
+ */
+
 module.exports =
 class Users {
     constructor(pool) {

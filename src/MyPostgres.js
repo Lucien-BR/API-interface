@@ -13,16 +13,6 @@ class MyPostgres {
     this.users = new Users(this.pool);
     this.creds = new Creds(this.pool);
   }
-
-  errMessage(er) {
-    if (er == null){    
-      return("Task completed succesfully.\n");
-    } 
-    else {
-      console.log(er.stack);
-      return("Task failed, rolling back. Modifications were reverted.\n\n Have fun with the stack tracer! \n\n"+er.stack);
-    }
-  }
   /*
   ** CRITICALS:END
   */
@@ -38,22 +28,22 @@ class MyPostgres {
 
   async addUser(email, nom, prenom, telephone, status) {
     let pgRes = await this.users.addUser(email, nom, prenom, telephone, status);
-    return [pgRes[0], this.errMessage(pgRes[1])];
+    return [pgRes[0], pgRes[1]];
   }
 
   async updateUser(email, nom, prenom, telephone) {
     let pgRes = await this.users.updateUser(email, nom, prenom, telephone);
-    return [pgRes[0], this.errMessage(pgRes[1])];
+    return [pgRes[0], pgRes[1]];
   }
 
   async updateUserStatus(email, status) {
     let pgRes = await this.users.updateUserStatus(email, status);
-    return [pgRes[0], this.errMessage(pgRes[1])];
+    return [pgRes[0], pgRes[1]];
   }
 
   async removeUser(email) {
     let pgRes = await this.users.removeUser(email);
-    return [pgRes[0], this.errMessage(pgRes[1])];
+    return [pgRes[0], pgRes[1]];
   }
   /*
   ** USERS:END
@@ -69,25 +59,25 @@ class MyPostgres {
 
   async addCred(email, psw, status) {
     let pgRes = await this.creds.addCred(email, psw, status);
-    return [pgRes[0], this.errMessage(pgRes[1])];
+    return [pgRes[0], pgRes[1]];
   }
 
   async updateCredPsw(email, psw) {
     let pgRes = await this.creds.updateCredPsw(email, psw);
-    return [pgRes[0], this.errMessage(pgRes[1])];
+    return [pgRes[0], pgRes[1]];
   }
 
   async updateCredStatus(email, status) {
     let pgRes = await this.creds.updateCredStatus(email, status);
-    return [pgRes[0], this.errMessage(pgRes[1])];
+    return [pgRes[0], pgRes[1]];
   }
 
   async removeCred(email) {
     let pgRes = await this.creds.removeCred(email);
-    return [pgRes[0], this.errMessage(pgRes[1])];
+    return [pgRes[0], pgRes[1]];
   }
   /*
-  ** CREDENTIALS:BEGIN
+  ** CREDENTIALS:END
   */
 }
 /*

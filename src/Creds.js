@@ -1,16 +1,52 @@
+/**
+ * class Creds :
+ * 
+ * getAllCreds()
+ * autoLogin()
+ * addCred()
+ * updateCredPsw()
+ * updateCredStatus()
+ * removeCred()
+ * 
+ */
+
 module.exports =
 class Creds {
     // Voir tout Credentials 
     async getAllCreds() {
-        var code = 0, temp;
-        const client = await this.pool.connect();
-        await client
-          .query('SELECT * FROM Credentials')
-          .then(result => temp = result)
-          .catch(e => {console.error(e.stack); code = 1;});
-        client.release();
-        return [code, temp];
-      }
+      var code = 0, temp;
+      const client = await this.pool.connect();
+      await client
+        .query('SELECT * FROM Credentials')
+        .then(result => temp = result)
+        .catch(e => {console.error(e.stack); code = 1;});
+      client.release();
+      return [code, temp];
+    }
+
+    async autoLogin(ip) {
+      var er = null, code = 0;
+      ;(async () => {
+          const client = await this.pool.connect();
+          try {
+            await client.query('BEGIN');
+            const queryText = 'SELECT CASE WHEN EXISTS('+
+                              'SELECT * FROM Credentials WHERE ip = $1 AND'+ 
+                              'LOCALTIMESTAMP - lastCon > INTERVAL 15 MINUTE'+
+                              ') THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END';
+            const queryValues = [email, psw, status];
+            await client.query(queryText, queryValues);
+            await client.query('COMMIT');
+          } catch (e) {
+            code = 1;
+            await client.query('ROLLBACK');
+            throw e;
+          } finally {
+            client.release();
+          }
+        })().catch(e => {console.error(e.stack); er = e});
+      return [code, er];
+    }
 
     // Ajouter Credential
     async addCred(email, psw, status) {
@@ -98,4 +134,8 @@ class Creds {
           })().catch(e => {console.error(e.stack); er = e});
           return [code, er];
       }
+
+
+
+
 }

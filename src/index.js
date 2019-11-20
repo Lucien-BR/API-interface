@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 */
 app.get('/', (request, response) => {
     response.status(200).json(
-        {
+        { // TODO: UPDATE THIS
             Default: '/',
             Info: 'Voici notre API!',
             Routes: '/gateways/<parameters>',
@@ -106,21 +106,6 @@ app.post('/removeUser/:email', async (req, res) => {
     if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 409; } // Conflict
     res.status(code).end("\n "+code+" "+pgRes2[1]);
 });
-/*
-** USERS:END
-*/
-
-
-
-/*
-** CREDENTIALS:BEGIN
-*/
-app.get("/creds", async (req,res) => {
-    let pgRes       = await MyPG.getAllCreds();
-    var code        = 200; // OK
-    if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json({ credentials: pgRes[1].rows });
-});
 
 app.post('/updatePsw/:email/:psw', async (req,res) => {
     var email       = req.params.email;
@@ -130,8 +115,25 @@ app.post('/updatePsw/:email/:psw', async (req,res) => {
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).end("\n "+code+" "+pgRes[1]);
 });
+
 /*
-** CREDS:END
+** USERS:END
+*/
+
+
+
+/*
+** CREDENTIALS:BEGIN
+*/
+app.get('/autoLogin/:ip', async (req,res) => {
+    var ip       = req.params.ip;
+    let pgRes       = await MyPG.autoLogin(ip);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json(pgRes[1]);
+});
+/*
+** CREDENTIALS:END
 */
 
 
