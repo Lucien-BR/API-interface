@@ -1,4 +1,4 @@
- - Retirer les get ALLs
- - metres une fonctions d'auto-authentification (avec IPv6)
+X- Retirer les get ALLs
+X- metres une fonctions d'auto-authentification (avec IPv6)
  - metres une fonctions authentification
  - faire des retours appropries (email unknown, wrong password, etc)

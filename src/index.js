@@ -136,6 +136,15 @@ app.get('/autoLogin/:ip', async (req,res) => {
 ** CREDENTIALS:END
 */
 
+/**
+ * TODO: TEMP A EFFACER ET DANS MYPOSTGRES.JS ET DANS CREDS.JS
+ */
+app.get("/creds", async (req,res) => {
+    let pgRes       = await MyPG.getAllCreds();
+    var code        = 200; // OK
+    if (pgRes[0] != 0) { code = 400; } // Bad Request
+    res.status(code).json({ users: pgRes[1].rows });
+});
 
 
 /*

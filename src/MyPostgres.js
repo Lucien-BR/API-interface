@@ -53,8 +53,22 @@ class MyPostgres {
   /*
   ** CREDENTIALS:BEGIN
   */
-  async getAllCreds() {
-    return await this.creds.getAllCreds();
+// TODO: A EFFACER
+  async getALlCreds() {
+    var code = 0, temp;
+    const client = await this.pool.connect();
+    await client
+      .query('SELECT * FROM Credentials')
+      .then(result => temp = result)
+      .catch(e => {console.error(e.stack); code = 1;});
+    client.release();
+    return  [code, temp];
+  }
+
+
+  async autoLogin(ip) {
+    let pgRes = await this.creds.autoLigin(ip);
+    return [pgRes[0], pgRes[1]];
   }
 
   async addCred(email, psw, status) {
