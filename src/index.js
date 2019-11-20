@@ -125,9 +125,19 @@ app.post('/updatePsw/:email/:psw', async (req,res) => {
 /*
 ** CREDENTIALS:BEGIN
 */
-app.get('/autoLogin/:ip', async (req,res) => {
-    var ip       = req.params.ip;
+app.post('/autoLogin/:ip', async (req,res) => {
+    var ip          = req.params.ip;
     let pgRes       = await MyPG.autoLogin(ip);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json(pgRes[1]);
+});
+
+app.post('/login/:email/:psw/:ip', async (req,res) => {
+    var email       = req.params.email;
+    var psw         = req.params.psw;
+    var ip          = req.params.ip;
+    let pgRes       = await MyPG.login(email, psw, ip);
     var code        = 202; // Accepted
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).json(pgRes[1]);

@@ -54,7 +54,7 @@ class MyPostgres {
   ** CREDENTIALS:BEGIN
   */
 // TODO: A EFFACER
-  async getALlCreds() {
+  async getAllCreds() {
     var code = 0, temp;
     const client = await this.pool.connect();
     await client
@@ -65,9 +65,13 @@ class MyPostgres {
     return  [code, temp];
   }
 
-
   async autoLogin(ip) {
-    let pgRes = await this.creds.autoLigin(ip);
+    let pgRes = await this.creds.autoLogin(ip);
+    return [pgRes[0], pgRes[1]];
+  }
+
+  async login(email, psw, ip) {
+    let pgRes = await this.creds.login(email, psw, ip);
     return [pgRes[0], pgRes[1]];
   }
 

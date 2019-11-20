@@ -11,20 +11,54 @@
 
 module.exports =
 class Creds {
+
+    constructor(pool) {
+      this.pool = pool;
+    }
+
     async autoLogin(ip) {
-      var temp = null, code = 0;
+      var temp = null, code = 0, ret = null;
       const client = await this.pool.connect();
-      const queryText = 'SELECT CASE WHEN EXISTS('+
-                        'SELECT * FROM Credentials WHERE ip = $1 AND'+ 
-                        'LOCALTIMESTAMP - lastCon > INTERVAL 15 MINUTE'+
-                        ') THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END';
+      const queryText = "SELECT CASE WHEN EXISTS("+
+                        "SELECT * FROM Credentials WHERE ip = $1 AND "+ 
+                        "LOCALTIMESTAMP - lastCon > INTERVAL '15 MINUTE'"+ //SWITCHER LE > LORSQUE LASTCON UPDATE REGULIEREMENT
+                        ") THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END";
       const queryValues = [ip];
       await client.query(queryText, queryValues)
-        .then(res => temp = res )
+        .then(res => temp = res.rows[0].case )
         .catch(e => {console.error(e.stack); code = 1;});
       client.release();
-      return [code, temp];
+      if (temp == 1) {
+        ret = { autoLogin: "authorized" }; // if authorized, the Controler should send a full auth. request
+        // TO BE COMPLETED (AKA add an authentification method here)
+      }
+      else if (temp == 0) {
+        ret = { autoLogin: "declined" };
+      }
+      return [code, ret];
     }
+
+    async login(email, psw, ip) {
+      var temp = null, code = 0, ret = null;
+      const client = await this.pool.connect();
+      const queryText = "SELECT CASE WHEN EXISTS("+
+                        "SELECT * FROM Credentials WHERE email = $1, psw = $2 AND "+ 
+                        "LOCALTIMESTAMP - lastCon > INTERVAL '15 MINUTE'"+ 
+                        ") THEN (A1) ELSE (A2) END";
+      const queryValues = [ip];
+      await client.query(queryText, queryValues)
+        .then(res => temp = res.rows[0].case )
+        .catch(e => {console.error(e.stack); code = 1;});
+      client.release();
+      if (temp == 1) {
+        ret = { autoLogin: "authorized" };
+      }
+      else if (temp == 0) {
+        ret = { autoLogin: "declined" };
+      }
+      return [code, ret];
+    }
+
 
     // Ajouter Credential
     async addCred(email, psw, status) {
