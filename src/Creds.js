@@ -2,6 +2,7 @@
  * class Creds :
  * 
  * autoLogin()
+ * login()
  * addCred()
  * updateCredPsw()
  * updateCredStatus()
@@ -16,6 +17,7 @@ class Creds {
       this.pool = pool;
     }
 
+    // authentification automatique
     async autoLogin(ip) {
       var temp = null, code = 0;
       const client = await this.pool.connect();
@@ -26,8 +28,8 @@ class Creds {
                 "SELECT * FROM Credentials "+
                 "WHERE ip = $1 "+
             ") "+
-                "THEN ('timedOut') "+
-                "ELSE ('unknownConnection') "+
+                "THEN ('timedOutConn') "+
+                "ELSE ('unknownConn') "+
                 "END "+
         "), "+
         "A2 AS ( "+ // Return client's email -- DOIT REFRESH LE lasCon!!
@@ -58,6 +60,7 @@ class Creds {
       return [code, temp];
     }
 
+    // Authentification reguliere
     async login(email, psw, ip) {
       var temp = null, code = 0;
       const client = await this.pool.connect();
@@ -68,8 +71,8 @@ class Creds {
               "SELECT * FROM Credentials "+
               "WHERE email = $1 "+
             ") "+
-              "THEN ('wrongCreds') "+ // Pour ne pas dire mauvais mot de passe on dit mauvaise combinaison
-              "ELSE ('unknownUser') "+ // n'extiste pas => creer nouveau user
+              "THEN ('wrongCred') "+ // Pour ne pas dire mauvais mot de passe on dit mauvaise combinaison
+              "ELSE ('unknownCred') "+ // n'extiste pas => creer nouveau user
               "END "+
           "), "+
           "A2 AS ( "+ // UPDATE IP AND LASTCON -- THEN -- RETURN loggedIn
@@ -184,8 +187,5 @@ class Creds {
           })().catch(e => {console.error(e.stack); er = e});
           return [code, er];
       }
-
-
-
 
 }
