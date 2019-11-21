@@ -2,6 +2,7 @@ const { Pool } = require('pg');
 const Users   = require('./Users.js');
 const Creds   = require('./Creds.js');
 const Events  = require('./Events.js');
+const Teams   = require('./Teams.js')
 
 module.exports =
 class MyPostgres {
@@ -14,6 +15,7 @@ class MyPostgres {
     this.users    = new Users(this.pool);
     this.creds    = new Creds(this.pool);
     this.events   = new Events(this.pool); 
+    this.teams    = new Teams(this.pool);
   }
   /*
   ** CRITICALS:END
@@ -109,6 +111,34 @@ class MyPostgres {
   /**
    * EVENTS:END
    */
+
+
+
+   /**
+    * TEAMS:BEGIN
+    */
+   async getAllTeams() {
+     return await this.teams.getAllTeams();
+   }
+
+   async getOneTeam(id) {
+     return await this.teams.getOneTeam(id);
+   }
+
+   async addTeam(id, nom, ecole, nb, coach, telephone, email) {
+     return await this.teams.addTeam(id, nom, ecole, nb, coach, telephone, email);
+   }
+
+   async updateTeam(id, nom, ecole, nb, coach, telephone, email) {
+     return await this.teams.updateTeam(id, nom, ecole, nb, coach, telephone, email);
+   }
+
+   async removeTeam(id) {
+     return await this.teams.removeTeam(id);
+   }
+   /**
+    * TEAMS:END
+    */
 }
 /*
 ** END OF FILE

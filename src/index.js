@@ -58,6 +58,17 @@ app.get('/', (request, response) => {
                         Metre_A_Jour: '/updateEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: res err',
                         Retirer: '/remove/<idEvent> :: res err'
                     }
+                },
+                Equipes: {
+                    GET: {
+                        Obtenir_Tout: '/teams :: [{ teams: {...} }]',
+                        Obtenir_Un: '/getOneTeam/<idTeam> :: [{ team: {...} }]'
+                    },
+                    POST: {
+                        Ajouter: '/addTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: res err',
+                        Metre_A_Jour: '/updateTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: res err',
+                        Retirer: '/removeTeam/<idTeam> :: res err'
+                    }
                 }
             }
         }
@@ -226,6 +237,63 @@ app.post('/removeEvent/:id', async (req,res) => {
 /*
 ** EVENTS:END
 */
+
+/**
+ * TEAMS:BEGIN
+ */
+app.get('/teams', async (req,res) => {
+    let pgRes       = await MyPG.getAllTeams();
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ teams: pgRes[1] }]);
+});
+
+app.get('/getOneTeam/:id', async (req,res) => {
+    var id          = req.params.id;
+    let pgRes       = await MyPG.getOneTeam(id);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ team: pgRes[1] }]);
+});
+
+app.post('/addTeam/:id/:nom/:ecole/:nb/:coach/:cell/:email', async (req,res) => {
+    var id          = req.params.id;
+    var nom         = req.params.nom;
+    var ecole       = req.params.ecole;
+    var nb          = req.params.nb;
+    var coach       = req.params.coach;
+    var cell        = req.params.cell;
+    var email       = req.params.email;
+    let pgRes       = await MyPG.addTeam(id, nom, ecole, nb, coach, cell, email);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+app.post('/updateTeam/:id/:nom/:ecole/:nb/:coach/:cell/:email', async (req,res) => {
+    var id          = req.params.id;
+    var nom         = req.params.nom;
+    var ecole       = req.params.ecole;
+    var nb          = req.params.nb;
+    var coach       = req.params.coach;
+    var cell        = req.params.cell;
+    var email       = req.params.email;
+    let pgRes       = await MyPG.updateTeam(id, nom, ecole, nb, coach, cell, email);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+app.post('/removeTeam/:id', async (req,res) => {
+    var id          = req.params.id;
+    let pgRes       = await MyPG.removeTeam(id);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+/**
+ * TEAMS:END
+ */
 
 
 

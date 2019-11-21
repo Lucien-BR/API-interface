@@ -1,38 +1,38 @@
 /**
  * 
- * class Events:
+ * class Teams:
  * 
- * getAllEvents()
- * getOneEvent()
- * addEvent()
- * updateEvent()
- * removeEvent()
+ * getAllTeams()
+ * getOneTeam()
+ * addTeam()
+ * updateTeam()
+ * removeTeam()
  * 
  */
 module.exports = 
-class Events {
+class Teams {
 
     constructor(pool){
         this.pool = pool;
     }
 
-    // obtenir tous les events
-    async getAllEvents() {
+    // obtenir tous les equipes
+    async getAllTeams() {
         var code = 0, temp = null;
         const client = await this.pool.connect();
         await client
-          .query('SELECT * FROM Events')
+          .query('SELECT * FROM Teams')
           .then(result => temp = result.rows)
           .catch(e => {console.error(e.stack); code = 1;});
         client.release();
         return  [code, temp];
     }
 
-    // Obtenir un evenement
-    async getOneEvent(id) {
+    // obtenir une equipe
+    async getOneTeam(id) {
         var code = 0, temp;
         const client = await this.pool.connect();
-        const queryText = 'SELECT * FROM Events WHERE idEvent = $1';
+        const queryText = 'SELECT * FROM Teams WHERE idTeam = $1';
         const queryValues = [id];
         await client
           .query(queryText, queryValues)
@@ -42,15 +42,15 @@ class Events {
         return  [code, temp];
     }
 
-    // Ajouter un Evenement
-    async addEvent(id, nom, lieu, nbEquipes, debut, fin) {
+    // Ajouter une equipe
+    async addTeam(id, nom, ecole, nb, coach, telephone, email) {
         var er = null, code = 0;
         ;(async () => {
             const client = await this.pool.connect();
             try {
               await client.query('BEGIN');
-              const queryText = 'INSERT INTO Events(idEvent, nom, lieu, nbEquipes, debut, fin) VALUES ($1, $2, $3, $4, $5, $6)';
-              const queryValues = [id, nom, lieu, nbEquipes, debut, fin];
+              const queryText = 'INSERT INTO Teams(idTeam, nom, ecole, nbJoueurs, coach, telephone, email) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+              const queryValues = [id, nom, ecole, nb, coach, telephone, email];
               await client.query(queryText, queryValues);
               await client.query('COMMIT');
             } catch (e) {
@@ -64,15 +64,14 @@ class Events {
         return [code, er];
     }
 
-    // Metre a jour un evenement
-    async updateEvent(id, nom, lieu, nbEquipes, debut, fin) {
+    async updateTeam(id, nom, ecole, nb, coach, telephone, email) {
         var er = null, code = 0;
         ;(async () => {
             const client = await this.pool.connect();
             try {
               await client.query('BEGIN');
-              const queryText = 'UPDATE Events SET nom = $2, lieu = $3, nbEquipes = $4, debut = $5, fin = $6 WHERE idEvent = $1';
-              const queryValues = [id, nom, lieu, nbEquipes, debut, fin];
+              const queryText = 'UPDATE Teams SET nom = $2, ecole = $3, nbJoueurs = $4, coach = $5, telephone = $6, email = $7 WHERE idTeam = $1';
+              const queryValues = [id, nom, ecole, nb, coach, telephone, email];
               await client.query(queryText, queryValues);
               await client.query('COMMIT');
             } catch (e) {
@@ -87,13 +86,13 @@ class Events {
     }
 
     // retirer un evenement
-    async removeEvent(id) {
+    async removeTeam(id) {
         var er = null, code =0;
         ;(async () => {
             const client = await this.pool.connect();
             try {
               await client.query('BEGIN');
-              const queryText = 'DELETE FROM Events * WHERE idEvent = $1';
+              const queryText = 'DELETE FROM Teams * WHERE idTeam = $1';
               const userValue = [id];
               await client.query(queryText, userValue);
               await client.query('COMMIT');
@@ -106,6 +105,6 @@ class Events {
             }
           })().catch(e => {console.error(e.stack); er = e});
         return [code, er];
-    }
+      }
 
 }
