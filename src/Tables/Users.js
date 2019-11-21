@@ -114,7 +114,7 @@ class Users {
         ;(async () => {
             const client = await this.pool.connect();
             try {
-              await client.query('BEGIN');
+              await client.query('BEGIN');s
               const queryText = 'DELETE FROM Users * WHERE email = $1';
               const userValue = [email];
               await client.query(queryText, userValue);

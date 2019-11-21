@@ -1,8 +1,8 @@
 const { Pool } = require('pg');
-const Users   = require('./Users.js');
-const Creds   = require('./Creds.js');
-const Events  = require('./Events.js');
-const Teams   = require('./Teams.js')
+const Users   = require('./Tables/Users.js');
+const Creds   = require('./Tables/Creds.js');
+const Events  = require('./Tables/Events.js');
+const Teams   = require('./Tables/Teams.js')
 
 module.exports =
 class MyPostgres {
