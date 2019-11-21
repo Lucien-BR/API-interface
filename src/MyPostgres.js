@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
-const Users = require('./Users.js');
-const Creds = require('./Creds.js');
+const Users   = require('./Users.js');
+const Creds   = require('./Creds.js');
+const Events  = require('./Events.js');
 
 module.exports =
 class MyPostgres {
@@ -9,9 +10,10 @@ class MyPostgres {
   */
   constructor() {
     this.connectionString = "psotgresql://Lucien:lu-db@35.245.152.215:5432/impro-bd";
-    this.pool = new Pool({ connectionString: this.connectionString });
-    this.users = new Users(this.pool);
-    this.creds = new Creds(this.pool);
+    this.pool     = new Pool({ connectionString: this.connectionString });
+    this.users    = new Users(this.pool);
+    this.creds    = new Creds(this.pool);
+    this.events   = new Events(this.pool); 
   }
   /*
   ** CRITICALS:END
@@ -79,6 +81,34 @@ class MyPostgres {
   /*
   ** CREDENTIALS:END
   */
+
+
+
+  /**
+   * EVENTS:BEGIN
+   */
+  async getAllEvents() {
+    return await this.events.getAllEvents();
+  }
+
+  async getOneEvent(id) {
+    return await this.events.getOneEvent(id);
+  }
+
+  async addEvent(id, nom, lieu, nbEquipes, debut, fin) {
+    return await this.events.addEvent(id, nom, lieu, nbEquipes, debut, fin);
+  }
+
+  async updateEvent(id, nom, lieu, nbEquipes, debut, fin) {
+    return await this.events.updateEvent(id, nom, lieu, nbEquipes, debut, fin);
+  }
+
+  async removeEvent(id) {
+    return await this.events.removeEvent(id);
+  }
+  /**
+   * EVENTS:END
+   */
 }
 /*
 ** END OF FILE

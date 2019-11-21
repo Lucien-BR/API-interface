@@ -2,16 +2,17 @@ const MyPostgres    = require("./MyPostgres");
 const express       = require('express');
 const cors          = require('cors'); // cross-origin ressource sharing
 const bodyParser    = require('body-parser');
+const helmet        = require('helmet');
 const app           = express();
 const port          = 8080;
 
 const MyPG = new MyPostgres();
 
 app.use(cors());
+app.use(helmet());
 app.use(bodyParser.text({ type: 'text/html' })); // Mainly this one
 app.use(bodyParser.urlencoded({ extended: false, }));
 app.use(bodyParser.json());
-
 
 
 /*
@@ -31,11 +32,11 @@ app.get('/', (request, response) => {
                         Obtenir_Un: '/getOneUser :: [{ user: {...} }]'
                     },
                     POST:{
-                        Ajouter: '/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: String',
-                        Metre_A_Jour_Info: '/updateUser/<email>/<nom>/<prenom>/<telephone>/<status> :: String', 
-                        Metre_A_Jour_Mot_De_Passe: '/updatePsw/<email>/<nouveauMotDePasse> :: String',
-                        Metre_A_Jour_Status: '/updateStatus/<email>/<status> :: String',
-                        Retirer: '/removeUser/<email> :: String'
+                        Ajouter: '/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: res err',
+                        Metre_A_Jour_Info: '/updateUser/<email>/<nom>/<prenom>/<telephone>/<status> :: res err', 
+                        Metre_A_Jour_Mot_De_Passe: '/updatePsw/<email>/<nouveauMotDePasse> :: res err',
+                        Metre_A_Jour_Status: '/updateStatus/<email>/<status> :: res err',
+                        Retirer: '/removeUser/<email> :: res err'
                     }
                 },
                 Authentification: {
@@ -45,6 +46,17 @@ app.get('/', (request, response) => {
                     },
                     POST: {
 
+                    }
+                },
+                Evenement: {
+                    GET: {
+                        Obtenir_Tout: '/events :: [{ events: {...} }]',
+                        Obtenir_Un: '/getOneEvent/<idEvent> :: [{ Event: {...} }]'
+                    },
+                    POST: {
+                        Ajouter: '/addEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: res err',
+                        Metre_A_Jour: '/updateEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: res err',
+                        Retirer: '/remove/<idEvent> :: res err'
                     }
                 }
             }
@@ -88,7 +100,7 @@ app.post('/addUser/:email/:nom/:prenom/:telephone/:status/:psw', async (req,res)
     let pgRes2      = await MyPG.addCred(email, psw, status);
     var code        = 201; // Created
     if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406;} // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes2[1]);
+    res.status(code).end("res: "+code+" err: "+pgRes2[1]);
 });
 
 // NEVER modify the email. This api won't allow it.
@@ -100,7 +112,7 @@ app.post('/updateUser/:email/:nom/:prenom/:telephone', async (req,res) => {
     let pgRes       = await MyPG.updateUser(email, nom, prenom, telephone);
     var code        = 202; // Accepted
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
 });
 
 app.post('/updateStatus/:email/:status', async (req,res) => {
@@ -110,7 +122,7 @@ app.post('/updateStatus/:email/:status', async (req,res) => {
     let pgRes2      = await MyPG.updateCredStatus(email, status);
     var code        = 202; // Accepted
     if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes2[1]);
+    res.status(code).end("res: "+code+" err: "+pgRes2[1]);
 });
 
 app.post('/removeUser/:email', async (req, res) => {
@@ -119,7 +131,7 @@ app.post('/removeUser/:email', async (req, res) => {
     let pgRes2      = await MyPG.removeUser(email);
     var code        = 202; // Accepted
     if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 409; } // Conflict
-    res.status(code).end("\n "+code+" "+pgRes2[1]);
+    res.status(code).end("res: "+code+" err: "+pgRes2[1]);
 });
 
 app.post('/updatePsw/:email/:psw', async (req,res) => {
@@ -128,7 +140,7 @@ app.post('/updatePsw/:email/:psw', async (req,res) => {
     let pgRes       = await MyPG.updateCredPsw(email, psw);
     var code        = 202; // Accepted
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("\n "+code+" "+pgRes[1]);
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
 });
 /*
 ** USERS:END
@@ -158,6 +170,61 @@ app.get('/login/:email/:psw/:ip', async (req,res) => {
 });
 /*
 ** AUTHENTIFICATION:END
+*/
+
+/*
+** EVENTS:BEGIN
+*/
+app.get('/events', async (req,res) => {
+    let pgRes       = await MyPG.getAllEvents();
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ events: pgRes[1] }]);
+});
+
+app.get('/getOneEvent/:id', async (req,res) => {
+    var id          = req.params.id;
+    let pgRes       = await MyPG.getOneEvent(id);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ event: pgRes[1] }]);
+});
+
+app.post('/addEvent/:id/:nom/:lieu/:nb/:debut/:fin', async (req,res) => {
+    var id          = req.params.id;
+    var nom         = req.params.nom;
+    var lieu        = req.params.lieu;
+    var nb          = req.params.nb;
+    var debut       = req.params.debut;
+    var fin         = req.params.fin;
+    let pgRes       = await MyPG.addEvent(id, nom, lieu, nb, debut, fin);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+app.post('/updateEvent/:id/:nom/:lieu/:nb/:debut/:fin', async (req,res) => {
+    var id          = req.params.id;
+    var nom         = req.params.nom;
+    var lieu        = req.params.lieu;
+    var nb          = req.params.nb;
+    var debut       = req.params.debut;
+    var fin         = req.params.fin;
+    let pgRes       = await MyPG.updateEvent(id, nom, lieu, nb, debut, fin);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+app.post('/removeEvent/:id', async (req,res) => {
+    var id          = req.params.id;
+    let pgRes       = await MyPG.removeEvent(id);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+/*
+** EVENTS:END
 */
 
 

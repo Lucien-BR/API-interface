@@ -16,9 +16,9 @@ class Users {
         this.pool = pool;
     }
 
-    // retourner tout les utilisateurs
+    // obtenir tout les utilisateurs
     async getAllUsers() {
-        var code = 0, temp;
+        var code = 0, temp = null;
         const client = await this.pool.connect();
         await client
           .query('SELECT * FROM Users')
@@ -127,7 +127,7 @@ class Users {
               client.release();
             }
           })().catch(e => {console.error(e.stack); er = e});
-        return [code, this.errMessage(er)];
+        return [code, er];
       }
 
 }
