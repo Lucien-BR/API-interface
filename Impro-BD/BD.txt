@@ -1,0 +1,75 @@
+>
+>
+========= debut:GCloud DB ==============
+
+nom du service: 	impro-bd
+GCloud Shell password: 	IFT215
+
+========= fin:GCloud DB ================
+>
+>
+========= debut:CONNECTION =============
+
+instance connection name:
+    impro-systems:us-east4:impro-bd
+host: 			35.245.152.215
+database: 		postgres
+
+========= fin:CONNECTION ===============
+>
+>
+========= debut:NOTES ==================
+
+you should know IP:
+%%% Chaque addresse IP doit etre
+%%%	pre-autorisee et enregistrer
+%%%	preallablement.
+
+IPv4/IPv6 Auth.:
+%%% L'instance IP de l'udes est 
+%%% presentement le seul NS, ou
+%%% le seul DMZ authoriser.
+
+
+%%% Utiliser CISCO pour y acceder %%%
+
+
+SSL/SHL/SSH:
+%%%	Possibilite de s'y connecter
+%%%	avec ses protocoles, mais
+%%%	besoin de generer des 
+%%%	certificats pour ca et ce
+%%%	pour chaque instances.
+
+========= fin:NOTES ===================
+>
+>
+========= debut:USERS =================
+
+Default:
+user: 			postgres
+password: 		impro-psw
+
+Lucien:
+user: 			Lucien
+password: 		lu-db
+
+/** Restored backup. 
+*N'existe pas encore:
+*
+*Maxime:
+*user: 			Maxime
+*password: 		max-db
+*
+*Olivier:
+*user:           Olivier
+*password:       oli-db
+*
+*Camille:
+*user:           Camille
+*password:       cam-db
+**/
+
+========= fin:USERS ===================
+>
+>
