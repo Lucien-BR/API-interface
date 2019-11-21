@@ -27,7 +27,8 @@ app.get('/', (request, response) => {
                 Classes: 'Signature :: Return Type',
                 Utilisateur: {
                     GET:{
-                        Voir_Tout: '/users :: [{ users: {...} }]'
+                        Obtenir_Tout: '/users :: [{ users: {...} }]',
+                        Obtenir_Un: '/getOneUser :: [{ user: {...} }]'
                     },
                     POST:{
                         Ajouter: '/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: String',
@@ -66,6 +67,16 @@ app.get("/users", async (req,res) => {
     res.status(code).json([{ users: pgRes[1].rows }]);
 });
 
+app.get('/getOneUser/:email', async (req,res) => {
+    var email       = req.params.email;
+    let pgRes       = await MyPG.getOneUser(email);
+    var code        = 200; // OK
+    if (pgRes[0] != 0) { code = 400; } // Bad Request
+    res.status(code).json([{ user: pgRes[1].rows }]);
+});
+
+// TODO: DANS LE BACKEND, FAIRE EN SORTE QU'A L'AJOUT D'UN USER, 
+// POUR QUE CA FASSE AUTOMATIQUEMENT /loggin APRES pour lastCon et l'adress IPv6
 app.post('/addUser/:email/:nom/:prenom/:telephone/:status/:psw', async (req,res) => {
     var email       = req.params.email;
     var nom         = req.params.nom;
@@ -119,7 +130,6 @@ app.post('/updatePsw/:email/:psw', async (req,res) => {
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).end("\n "+code+" "+pgRes[1]);
 });
-
 /*
 ** USERS:END
 */
@@ -157,7 +167,7 @@ app.get('/login/:email/:psw/:ip', async (req,res) => {
 */
 app.get('/*', (req,res) =>{
     res.status(501);
-})
+});
 
 // Basicly allows this api to wait for requests.
 app.listen(port, () => {
@@ -166,3 +176,7 @@ app.listen(port, () => {
 /*
 ** CRITICALS:END
 */
+
+/**
+ * END OF FILE
+ */

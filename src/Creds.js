@@ -167,6 +167,7 @@ class Creds {
       return [code, er];
     }
 
+    // retirer identifiants lors du retrait d'un utilisateur
     async removeCred(email) {
         var er = null, code =0;
         ;(async () => {
@@ -189,3 +190,6 @@ class Creds {
       }
 
 }
+/**
+ * END OF FILE
+ */

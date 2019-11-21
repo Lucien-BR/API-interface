@@ -26,24 +26,24 @@ class MyPostgres {
     return await this.users.getAllUsers();
   }
 
+  async getOneUser(email) {
+    return await this.users.getOneUser(email);
+  }
+
   async addUser(email, nom, prenom, telephone, status) {
-    let pgRes = await this.users.addUser(email, nom, prenom, telephone, status);
-    return [pgRes[0], pgRes[1]];
+    return await this.users.addUser(email, nom, prenom, telephone, status);
   }
 
   async updateUser(email, nom, prenom, telephone) {
-    let pgRes = await this.users.updateUser(email, nom, prenom, telephone);
-    return [pgRes[0], pgRes[1]];
+    return await this.users.updateUser(email, nom, prenom, telephone);
   }
 
   async updateUserStatus(email, status) {
-    let pgRes = await this.users.updateUserStatus(email, status);
-    return [pgRes[0], pgRes[1]];
+    return await this.users.updateUserStatus(email, status);
   }
 
   async removeUser(email) {
-    let pgRes = await this.users.removeUser(email);
-    return [pgRes[0], pgRes[1]];
+    return await this.users.removeUser(email);
   }
   /*
   ** USERS:END
@@ -54,33 +54,27 @@ class MyPostgres {
   ** CREDENTIALS:BEGIN
   */
   async autoLogin(ip) {
-    let pgRes = await this.creds.autoLogin(ip);
-    return [pgRes[0], pgRes[1]];
+    return await this.creds.autoLogin(ip);
   }
 
   async login(email, psw, ip) {
-    let pgRes = await this.creds.login(email, psw, ip);
-    return [pgRes[0], pgRes[1]];
+    return await this.creds.login(email, psw, ip);
   }
 
   async addCred(email, psw, status) {
-    let pgRes = await this.creds.addCred(email, psw, status);
-    return [pgRes[0], pgRes[1]];
+    return await this.creds.addCred(email, psw, status);
   }
 
   async updateCredPsw(email, psw) {
-    let pgRes = await this.creds.updateCredPsw(email, psw);
-    return [pgRes[0], pgRes[1]];
+    return await this.creds.updateCredPsw(email, psw);
   }
 
   async updateCredStatus(email, status) {
-    let pgRes = await this.creds.updateCredStatus(email, status);
-    return [pgRes[0], pgRes[1]];
+    return await this.creds.updateCredStatus(email, status);
   }
 
   async removeCred(email) {
-    let pgRes = await this.creds.removeCred(email);
-    return [pgRes[0], pgRes[1]];
+    return await this.creds.removeCred(email);
   }
   /*
   ** CREDENTIALS:END

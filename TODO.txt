@@ -2,5 +2,7 @@ X- Retirer les get ALLs
 X- metres une fonctions d'auto-authentification (avec IPv6)
 X- metres une fonctions authentification
 X- faire des retours appropries (email unknown, wrong password, etc)
- - Metre a jour le default gateway ('/')
- - Ajouter les retours
+X- Metre a jour le default gateway ('/')
+X- Ajouter les retours
+X- Refaire les lignes de retours dans MyPostgres.js
+ - Faire une fonction de refresh lastCon et l'appeller dans toutes les get/post

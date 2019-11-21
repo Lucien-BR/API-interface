@@ -2,6 +2,7 @@
  * class Users :
  * 
  * getAllUsers()
+ * getOneUsers()
  * addUser()
  * updateUser()
  * updateUserStatus()
@@ -15,6 +16,7 @@ class Users {
         this.pool = pool;
     }
 
+    // retourner tout les utilisateurs
     async getAllUsers() {
         var code = 0, temp;
         const client = await this.pool.connect();
@@ -26,6 +28,21 @@ class Users {
         return  [code, temp];
     }
 
+    // retourner un utilisateur
+    async getOneUser(email) {
+      var code = 0, temp;
+      const client = await this.pool.connect();
+      const queryText = 'SELECT * FROM Users WHERE email = $1';
+      const queryValues = [email];
+      await client
+        .query(queryText, queryValues)
+        .then(result => temp = result) // prob. redondant
+        .catch(e => {console.error(e.stack); code = 1;});
+      client.release();
+      return  [code, temp];
+    }
+
+    // ajouteur un utilisateur (mot de passe est gere deux niveaux plus haut)
     async addUser(email, nom, prenom, telephone, status) {
         var er = null, code = 0;
         ;(async () => {
@@ -47,6 +64,7 @@ class Users {
         return [code, er];
     }
     
+    // metre a jour les infos d'un utilisateur
     async updateUser(email, nom, prenom, telephone) {
         var er = null, code = 0;
         ;(async () => {
@@ -68,6 +86,7 @@ class Users {
         return [code, er];
     }
 
+    // metre a jour le status d'un utilisateur
     async updateUserStatus(email, status) {
         var er = null, code = 0;
         ;(async () => {
@@ -89,6 +108,7 @@ class Users {
         return [code, er];
     }
 
+    // retirer un utilisateur
     async removeUser(email) {
         var er = null, code =0;
         ;(async () => {
@@ -111,3 +131,6 @@ class Users {
       }
 
 }
+/**
+ * END OF FILE
+ */
