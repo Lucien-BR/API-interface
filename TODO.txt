@@ -1,4 +1,6 @@
 X- Retirer les get ALLs
 X- metres une fonctions d'auto-authentification (avec IPv6)
- - metres une fonctions authentification
- - faire des retours appropries (email unknown, wrong password, etc)
+X- metres une fonctions authentification
+X- faire des retours appropries (email unknown, wrong password, etc)
+ - Metre a jour le default gateway ('/')
+ - Ajouter les retours

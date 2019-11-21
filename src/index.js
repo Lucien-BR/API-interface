@@ -134,7 +134,7 @@ app.get('/autoLogin/:ip', async (req,res) => {
     let pgRes       = await MyPG.autoLogin(ip);
     var code        = 202; // Accepted
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([pgRes[1]]);
+    res.status(code).json([{ autoLoginStatus: pgRes[1] }]);
 });
 
 app.get('/login/:email/:psw/:ip', async (req,res) => {
@@ -144,7 +144,7 @@ app.get('/login/:email/:psw/:ip', async (req,res) => {
     let pgRes       = await MyPG.login(email, psw, ip);
     var code        = 202; // Accepted
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([pgRes[1]]);
+    res.status(code).json([{ loginStatus: pgRes[1] }]);
 });
 /*
 ** CREDENTIALS:END
