@@ -17,46 +17,84 @@ class Creds {
     }
 
     async autoLogin(ip) {
-      var temp = null, code = 0, ret = null;
+      var temp = null, code = 0;
       const client = await this.pool.connect();
-      const queryText = "SELECT CASE WHEN EXISTS("+
-                        "SELECT * FROM Credentials WHERE ip = $1 AND "+ 
-                        "LOCALTIMESTAMP - lastCon > INTERVAL '15 MINUTE'"+ //SWITCHER LE > LORSQUE LASTCON UPDATE REGULIEREMENT
-                        ") THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END";
+      const queryText = // See this query in ./Impro-BD/SQL scripts/Query-Testing/autoLogin.sql
+        "WITH "+ 
+        "A1 AS ( "+ // return soit (unknownConn) ou (connTimedOut)
+            "SELECT CASE WHEN EXISTS ( "+
+                "SELECT * FROM Credentials "+
+                "WHERE ip = $1 "+
+            ") "+
+                "THEN ('timedOut') "+
+                "ELSE ('unknownConnection') "+
+                "END "+
+        "), "+
+        "A2 AS ( "+ // Return client's email -- DOIT REFRESH LE lasCon!!
+            "UPDATE Credentials SET lastCon = LOCALTIMESTAMP "+
+            "WHERE ip = $1 "+
+            "RETURNING ( "+
+                "SELECT email FROM Credentials "+
+                "WHERE ip = $1 "+
+            ") "+
+        ") "+ // logged in
+        "SELECT CASE WHEN EXISTS ( "+ // TRY LOGIN
+            "SELECT * FROM Credentials "+
+            "WHERE ip = $1 AND LOCALTIMESTAMP - lastCon < INTERVAL '15 MINUTE' "+
+        ") "+
+            "THEN ( "+
+                "SELECT * FROM A2 "+
+            ") "+
+            "ELSE ( "+
+                "SELECT * FROM A1 "+
+            ") "+
+            "END;";
       const queryValues = [ip];
       await client.query(queryText, queryValues)
         .then(res => temp = res.rows[0].case )
         .catch(e => {console.error(e.stack); code = 1;});
       client.release();
-      if (temp == 1) {
-        ret = { autoLogin: "authorized" }; // if authorized, the Controler should send a full auth. request
-        // TO BE COMPLETED (AKA add an authentification method here)
-      }
-      else if (temp == 0) {
-        ret = { autoLogin: "declined" };
-      }
-      return [code, ret];
+      console.log(temp);
+      return [code, temp];
     }
 
     async login(email, psw, ip) {
-      var temp = null, code = 0, ret = null;
+      var temp = null, code = 0;
       const client = await this.pool.connect();
-      const queryText = "SELECT CASE WHEN EXISTS("+
-                        "SELECT * FROM Credentials WHERE email = $1, psw = $2 AND "+ 
-                        "LOCALTIMESTAMP - lastCon > INTERVAL '15 MINUTE'"+ 
-                        ") THEN (A1) ELSE (A2) END";
-      const queryValues = [ip];
+      const queryText = 
+        "WITH "+ 
+          "A1 AS ( "+
+            "SELECT CASE WHEN EXISTS ( "+ // EMAIL EXIST? wrong psw or creat account -- ELSE RETURN sumthing
+              "SELECT * FROM Credentials "+
+              "WHERE email = $1 "+
+            ") "+
+              "THEN ('wrongCreds') "+ // Pour ne pas dire mauvais mot de passe on dit mauvaise combinaison
+              "ELSE ('unknownUser') "+ // n'extiste pas => creer nouveau user
+              "END "+
+          "), "+
+          "A2 AS ( "+ // UPDATE IP AND LASTCON -- THEN -- RETURN loggedIn
+            "UPDATE Credentials SET lastCon = LOCALTIMESTAMP, ip = $3 "+
+            "WHERE email = $1 "+
+            "RETURNING 'loggedIn' "+ // logged in
+          ") "+
+        "SELECT CASE WHEN EXISTS ( "+ // TRY LOGIN
+          "SELECT * FROM Credentials "+
+          "WHERE email = $1 AND psw = $2 "+
+        ") "+
+          "THEN ( "+
+            "SELECT * FROM A2 "+
+          ") "+
+          "ELSE ( "+
+            "SELECT * FROM A1 "+
+          ") "+
+          "END;";
+      const queryValues = [email, psw, ip];
       await client.query(queryText, queryValues)
         .then(res => temp = res.rows[0].case )
         .catch(e => {console.error(e.stack); code = 1;});
       client.release();
-      if (temp == 1) {
-        ret = { autoLogin: "authorized" };
-      }
-      else if (temp == 0) {
-        ret = { autoLogin: "declined" };
-      }
-      return [code, ret];
+      //console.log(temp);
+      return [code, temp];
     }
 
 
