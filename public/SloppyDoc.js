@@ -11,11 +11,11 @@ var jon =
                             Obtenir_Un: "/getOneUser :: [{ user: {...} }]"
                         },
                         POST:{
-                            Ajouter: "/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: res err",
-                            Metre_A_Jour_Info: "/updateUser/<email>/<nom>/<prenom>/<telephone>/<status> :: res err", 
-                            Metre_A_Jour_Mot_De_Passe: "/updatePsw/<email>/<nouveauMotDePasse> :: res err",
-                            Metre_A_Jour_Status: "/updateStatus/<email>/<status> :: res err",
-                            Retirer: "/removeUser/<email> :: res err"
+                            Ajouter: "/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: 'res err'",
+                            Metre_A_Jour_Info: "/updateUser/<email>/<nom>/<prenom>/<telephone>/<status> :: 'res err'", 
+                            Metre_A_Jour_Mot_De_Passe: "/updatePsw/<email>/<nouveauMotDePasse> :: 'res err'",
+                            Metre_A_Jour_Status: "/updateStatus/<email>/<status> :: 'res err'",
+                            Retirer: "/removeUser/<email> :: 'res err'"
                         }
                     },
                     Authentification: {
@@ -33,9 +33,9 @@ var jon =
                             Obtenir_Un: "/getOneEvent/<idEvent> :: [{ Event: {...} }]"
                         },
                         POST: {
-                            Ajouter: "/addEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: res err",
-                            Metre_A_Jour: "/updateEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: res err",
-                            Retirer: "/remove/<idEvent> :: res err"
+                            Ajouter: "/addEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: 'res err'",
+                            Metre_A_Jour: "/updateEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: 'res err'",
+                            Retirer: "/remove/<idEvent> :: 'res err'"
                         }
                     },
                     Equipes: {
@@ -44,9 +44,9 @@ var jon =
                             Obtenir_Un: "/getOneTeam/<idTeam> :: [{ team: {...} }]"
                         },
                         POST: {
-                            Ajouter: "/addTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: res err",
-                            Metre_A_Jour: "/updateTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: res err",
-                            Retirer: "/removeTeam/<idTeam> :: res err"
+                            Ajouter: "/addTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: 'res err'",
+                            Metre_A_Jour: "/updateTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: 'res err'",
+                            Retirer: "/removeTeam/<idTeam> :: 'res err'"
                         }
                     }
                 }
@@ -57,7 +57,7 @@ var jon =
         
                 
         function output(inp) {
-            document.body.getElementsByClassName("ID").innerHTML = inp;
+            document.body.appendChild(document.createElement('pre')).innerHTML = inp;
         }
 
 
@@ -83,13 +83,9 @@ var jon =
         }
 
         function beautifyMyJson() {
-            //var str = JSON.stringify(jon);
-            var str = jon;
-            console.log(str); // ne se rend pas
-            output(str);
-            //output(syntaxHighlight(str));
+            var str = JSON.stringify(jon, null, '\t'); // ca marche bien
+            output(syntaxHighlight(str));
         }
-
 
         beautifyMyJson();
         //} // end class
