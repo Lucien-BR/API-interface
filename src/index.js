@@ -1,5 +1,5 @@
+const jon           = require("../public/jon.json");
 const MyPostgres    = require("./MyPostgres");
-//const SP            = require('./SloppyDoc');
 const express       = require('express');
 const cors          = require('cors'); // cross-origin ressource sharing
 const bodyParser    = require('body-parser');
@@ -7,9 +7,7 @@ const helmet        = require('helmet');
 const path          = require('path');
 const app           = express();
 const port          = 8080;
-
 const MyPG          = new MyPostgres();
-//const sp            = new SP();
 
 app.use(cors());
 app.use(helmet());
@@ -37,6 +35,10 @@ app.use(express.static('public', options));
 app.get('/', (request, response) => {
     response.status(200).sendFile('index.html', { root: './public' }); // cette ligne ci fonctionne bien.
 });
+
+app.get('/methods', (req,res) => {
+    res.status(200).json([jon]);
+})
 /*
 ** DEFAULT:END
 */
