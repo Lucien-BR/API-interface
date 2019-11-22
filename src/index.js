@@ -17,67 +17,25 @@ app.use(bodyParser.text({ type: 'text/html' })); // Mainly this one
 app.use(bodyParser.urlencoded({ extended: false, }));
 app.use(bodyParser.json());
 
+var options = {
+    dotfiles: 'ignore',
+    etag: false,
+    extensions: ['htm', 'html', 'js'],
+    index: false,
+    maxAge: '1d',
+    redirect: false,
+    setHeaders: function (res, path, stat) {
+      res.set('x-timestamp', Date.now())
+    }
+  }
+
+app.use(express.static('public', options));
+
 /*
 ** DEAFULT:BEGIN
 */
 app.get('/', (request, response) => {
-    response.status(200).sendFile('index.html', { root: './src' }); // cette ligne ci fonctionne bien.
-    /*
-    response.status(200).json([
-        { // TODO: UPDATE THIS
-            Default: '/',
-            Info: 'Voici notre API!',
-            Routes: '/gateways/<parameters>',
-            Tables: {
-                Classes: 'Signature :: Return Type',
-                Utilisateur: {
-                    GET:{
-                        Obtenir_Tout: '/users :: [{ users: {...} }]',
-                        Obtenir_Un: '/getOneUser :: [{ user: {...} }]'
-                    },
-                    POST:{
-                        Ajouter: '/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: res err',
-                        Metre_A_Jour_Info: '/updateUser/<email>/<nom>/<prenom>/<telephone>/<status> :: res err', 
-                        Metre_A_Jour_Mot_De_Passe: '/updatePsw/<email>/<nouveauMotDePasse> :: res err',
-                        Metre_A_Jour_Status: '/updateStatus/<email>/<status> :: res err',
-                        Retirer: '/removeUser/<email> :: res err'
-                    }
-                },
-                Authentification: {
-                    GET: {
-                        Automatique: "/autoLogin/<IPv6> :: [{ autoLoginStatus: 'timedOutConn / unknownConn / <email>' }]",
-                        Regulier: "/login/<email>/<motDePasse>/<IPv6> :: [{ loginStatus: 'wrondCred / unknownCred / loggedIn' }]"
-                    },
-                    POST: {
-
-                    }
-                },
-                Evenement: {
-                    GET: {
-                        Obtenir_Tout: '/events :: [{ events: {...} }]',
-                        Obtenir_Un: '/getOneEvent/<idEvent> :: [{ Event: {...} }]'
-                    },
-                    POST: {
-                        Ajouter: '/addEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: res err',
-                        Metre_A_Jour: '/updateEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: res err',
-                        Retirer: '/remove/<idEvent> :: res err'
-                    }
-                },
-                Equipes: {
-                    GET: {
-                        Obtenir_Tout: '/teams :: [{ teams: {...} }]',
-                        Obtenir_Un: '/getOneTeam/<idTeam> :: [{ team: {...} }]'
-                    },
-                    POST: {
-                        Ajouter: '/addTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: res err',
-                        Metre_A_Jour: '/updateTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: res err',
-                        Retirer: '/removeTeam/<idTeam> :: res err'
-                    }
-                }
-            }
-        }
-    ])
-    */
+    response.status(200).sendFile('index.html', { root: './public' }); // cette ligne ci fonctionne bien.
 });
 /*
 ** DEFAULT:END
