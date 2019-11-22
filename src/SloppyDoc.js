@@ -1,8 +1,4 @@
-module.exports = 
-class SloppyDoc {
-
-    constructor() {
-        this.json = [
+let json = [
             { // TODO: UPDATE THIS
                 Default: '/',
                 Info: 'Voici notre API!',
@@ -56,21 +52,20 @@ class SloppyDoc {
                 }
             }
         ];
-    } // end constructor
+    //} // end constructor
     // https://stackoverflow.com/questions/4810841/how-can-i-pretty-print-json-using-javascript?rq=1
-    beautifyMyJson(jon) {
-        var obj = {a:1, 'b':'foo', c:[false,'false',null, 'null', {d:{e:1.3e5,f:'1.3e5'}}]};
-        var str = JSON.stringify(obj, undefined, 4);
-
-        output(str);
-        output(syntaxHighlight(str));
+    function beautifyMyJson() {
+        var str = JSON.stringify(json, undefined, 4);
+        console.log(str); // ne se rend pas
+        this.output(str);
+        this.output(syntaxHighlight(str));
     }
 
-    output(inp) {
+    function output(inp) {
         document.body.appendChild(document.createElement('pre')).innerHTML = inp;
     }
 
-    syntaxHighlight(json) {
+    function syntaxHighlight(json) {
         if (typeof json != 'string') {
              json = JSON.stringify(json, undefined, 2);
         }
@@ -93,4 +88,4 @@ class SloppyDoc {
     }
 
 
-} // end class
+//} // end class

@@ -1,12 +1,15 @@
 const MyPostgres    = require("./MyPostgres");
+//const SP            = require('./SloppyDoc');
 const express       = require('express');
 const cors          = require('cors'); // cross-origin ressource sharing
 const bodyParser    = require('body-parser');
 const helmet        = require('helmet');
+const path          = require('path');
 const app           = express();
 const port          = 8080;
 
-const MyPG = new MyPostgres();
+const MyPG          = new MyPostgres();
+//const sp            = new SP();
 
 app.use(cors());
 app.use(helmet());
@@ -14,11 +17,12 @@ app.use(bodyParser.text({ type: 'text/html' })); // Mainly this one
 app.use(bodyParser.urlencoded({ extended: false, }));
 app.use(bodyParser.json());
 
-
 /*
 ** DEAFULT:BEGIN
 */
 app.get('/', (request, response) => {
+    response.status(200).sendFile('index.html', { root: './src' }); // cette ligne ci fonctionne bien.
+    /*
     response.status(200).json([
         { // TODO: UPDATE THIS
             Default: '/',
@@ -73,6 +77,7 @@ app.get('/', (request, response) => {
             }
         }
     ])
+    */
 });
 /*
 ** DEFAULT:END
