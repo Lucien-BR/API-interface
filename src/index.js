@@ -1,4 +1,4 @@
-require('@google-cloud/debug-agent');
+require('@google-cloud/debug-agent').start();
 const jon           = require("../public/jon.json");
 const MyPostgres    = require("./MyPostgres");
 const express       = require('express');
