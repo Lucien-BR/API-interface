@@ -55,6 +55,13 @@ app.get("/users", async (req,res) => {
     res.status(code).json([{ users: pgRes[1].rows }]);
 });
 
+app.get("/benevoles", async (req,res) => {
+    let pgRes       = await MyPG.getAllBenevoles();
+    var code        = 200; // OK
+    if (pgRes[0] != 0) { code = 400; } // Bad Request
+    res.status(code).json([{ benevoles: pgRes[1].rows }]);
+})
+
 app.get('/getOneUser/:email', async (req,res) => {
     var email       = req.params.email;
     let pgRes       = await MyPG.getOneUser(email);
@@ -62,6 +69,14 @@ app.get('/getOneUser/:email', async (req,res) => {
     if (pgRes[0] != 0) { code = 400; } // Bad Request
     res.status(code).json([{ user: pgRes[1].rows }]);
 });
+
+app.get('/getOneBenevole/:email', async (req,res) => {
+    var email       = req.params.email;
+    let pgRes       = await MyPG.getOneBenevole(email);
+    var code        = 200; // OK
+    if (pgRes[0] != 0) { code = 400; } // Bad Request
+    res.status(code).json([{ benevole: pgRes[1].rows }]);
+})
 
 // TODO: DANS LE BACKEND, FAIRE EN SORTE QU'A L'AJOUT D'UN USER, 
 // POUR QUE CA FASSE AUTOMATIQUEMENT /loggin APRES pour lastCon et l'adress IPv6

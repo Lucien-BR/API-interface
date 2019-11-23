@@ -30,8 +30,16 @@ class MyPostgres {
     return await this.users.getAllUsers();
   }
 
+  async getAllBenevoles() {
+    return await this.users.getAllBenevoles();
+  }
+
   async getOneUser(email) {
     return await this.users.getOneUser(email);
+  }
+
+  async getOneBenevole(email) {
+    return await this.users.getOneBenevole(email);
   }
 
   async addUser(email, nom, prenom, telephone, status) {
@@ -49,6 +57,7 @@ class MyPostgres {
   async removeUser(email) {
     return await this.users.removeUser(email);
   }
+
   /*
   ** USERS:END
   */
