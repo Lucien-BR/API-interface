@@ -1,5 +1,6 @@
 {
-    "Default": "/",
+    "Methods": "/",
+    "Default_Methods": "/methods :: {...}",
     "Info": "Voici notre API!",
     "Routes": "/gateways/<parameters>",
     "Tables": {

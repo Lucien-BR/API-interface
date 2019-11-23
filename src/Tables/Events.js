@@ -21,7 +21,7 @@ class Events {
         var code = 0, temp = null;
         const client = await this.pool.connect();
         await client
-          .query('SELECT * FROM Events')
+          .query('SELECT * FROM Events ORDER BY fin DESC')
           .then(result => temp = result.rows)
           .catch(e => {console.error(e.stack); code = 1;});
         client.release();
