@@ -4,8 +4,7 @@ const MyPostgres    = require("./MyPostgres");
 const express       = require('express');
 const cors          = require('cors'); // cross-origin ressource sharing
 const bodyParser    = require('body-parser');
-const helmet        = require('helmet');
-const path          = require('path');
+const helmet        = require('helmet'); // http methods security
 const app           = express();
 const port          = 8080;
 const MyPG          = new MyPostgres();
@@ -19,7 +18,7 @@ app.use(bodyParser.json());
 var options = {
     dotfiles: 'ignore',
     etag: false,
-    extensions: ['htm', 'html', 'js'],
+    extensions: ['htm', 'html'],
     index: false,
     maxAge: '1d',
     redirect: false,
