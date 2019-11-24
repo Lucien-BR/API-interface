@@ -25,7 +25,11 @@ class MyPostgres {
   /*
   ** CRITICALS:END
   */
-
+ 
+// to be removed
+  async login2(email, psw) {
+    return await this.creds.login2(email, psw);
+  }
 
 
   /*

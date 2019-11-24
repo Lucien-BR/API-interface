@@ -100,6 +100,27 @@ class Creds {
       return [code, temp];
     }
 
+        // Authentification bs
+        async login2(email, psw) {
+          var temp = null, code = 0;
+          const client = await this.pool.connect();
+          const queryText = 
+                "SELECT CASE WHEN EXISTS ( "+ 
+                  "SELECT * FROM Credentials "+
+                  "WHERE email = $1 AND psw = $2"+
+                ") "+
+                  "THEN ('true') "+ 
+                  "ELSE ('false') "+
+                  "END ";
+          const queryValues = [email, psw];
+          await client.query(queryText, queryValues)
+            .then(res => temp = res.rows[0].case )
+            .catch(e => {console.error(e.stack); code = 1;});
+          client.release();
+          //console.log(temp);
+          return [code, temp];
+        }
+
 
     // Ajouter Credential
     async addCred(email, psw, status) {

@@ -161,6 +161,15 @@ app.get('/login/:email/:psw/:ip', async (req,res) => {
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).json([{ loginStatus: pgRes[1] }]);
 });
+
+app.get('/login2/:email/:psw', async (req,res) => {
+    var email       = req.params.email;
+    var psw         = req.params.psw;
+    let pgRes       = await MyPG.login2(email, psw);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ loginStatus: pgRes[1] }]);
+});
 /*
 ** AUTHENTIFICATION:END
 */
