@@ -2,7 +2,7 @@ var jon =
 {
     "Methods": "/",
     "Default_Methods": "/methods :: {...}",
-    "Info": "Voici notre API!",
+    "Info": "Voici notre API, version 1-24a",
     "Routes": "/gateways/<parameters>",
     "Tables": {
         "Classes": "Signature :: Return Type",

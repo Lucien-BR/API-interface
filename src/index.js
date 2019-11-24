@@ -1,4 +1,4 @@
-//require('@google-cloud/debug-agent').start();
+require('@google-cloud/debug-agent').start(); // gcloud app deploy --version=1-24 --promote --stop-previous-version
 const jon           = require("../public/jon.json");
 const MyPostgres    = require("./MyPostgres");
 const express       = require('express');
