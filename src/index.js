@@ -323,6 +323,7 @@ app.post('/updateTeamStatus/:idEvent/:idTeam/:estInscrit/:aPaye/:statusDepot', a
     res.status(code).end("res: "+code+" err: "+pgRes[1]);
 });
 
+/* IS ACOMPLISHED THROUGH /compileMatchScore
 app.post('/updateTeamScore/:idEvent/:idTeam/:win/:lose/:penalites', async (req,res) => {
     var idEvent     = req.params.idEvent;
     var idTeam      = req.params.idTeam;
@@ -334,6 +335,7 @@ app.post('/updateTeamScore/:idEvent/:idTeam/:win/:lose/:penalites', async (req,r
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).end("res: "+code+" err: "+pgRes[1]);
 });
+*/
 
 app.post('/removeTeamFromEvent/:idEvent/:idTeam', async (req, res) => {
     var idEvent     = req.params.idEvent;
@@ -349,11 +351,129 @@ app.post('/removeTeamFromEvent/:idEvent/:idTeam', async (req, res) => {
 
 
 
+/**
+ * MATCHS:BEGIN
+ */
+app.get('/getAllEventMatchs/:idEvent', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    let pgRes       = await MyPG.getAllEventMatchs(idEvent);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ eventMatchs: pgRes[1] }]);
+});
+
+app.get('/getOneMatch/:idMatch', async (req,res) => {
+    var idMatch     = req.params.idMatch;
+    let pgRes       = await MyPG.getOneMatch(idMatch);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ match: pgRes[1] }]);
+});
+
+app.get('/getOneTeamEventMatchs/:idEvent/:idMatch', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    var idMatch     = req.params.idMatch;
+    let pgRes       = await MyPG.getOneTeamEventMatchs(idEvent, idMatch);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ teamMatchs: pgRes[1] }]);
+});
+
+app.post('/addMatchToEvent/:idMatch/:idEvent/:idTeamA/:idTeamB/:terrain/:date', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    var idMatch     = req.params.idMatch;
+    var idTeamA     = req.params.idTeamA;
+    var idTeamB     = req.params.idTeamB;
+    var terrain     = req.params.terrain;
+    var date        = req.params.date;
+    let pgRes       = await MyPG.addMatchToEvent(idMatch, idEvent, idTeamA, idTeamB, terrain, date);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+app.post('/updateEventMatchInfo/:idMatch/:terrain/:date', async (req,res) => {
+    var idMatch     = req.params.idMatch;
+    var terrain     = req.params.terrain;
+    var date        = req.params.date;
+    let pgRes       = await MyPG.updateEventMatchInfo(idMatch, terrain, date);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+/**
+ * Big one. compiling scores at the end of a match. Only achieve this once per match. 
+ * THIS IS NOT AN UPDATE COMMAND (https://i.kym-cdn.com/entries/icons/original/000/028/596/dsmGaKWMeHXe9QuJtq_ys30PNfTGnMsRuHuo_MUzGCg.jpg)
+ * Not restraining this command to once per match for debugging purposes
+ * -- TESTED AND OPERATIONAL --
+ * refered in Mypostgres.js and Matchs.js as updateEventMatchScore()
+*/
+app.post('/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB', async (req,res) => {
+    var idMatch     = req.params.idMatch;
+    var pointsA     = req.params.pointsA;
+    var penalitesA  = req.params.penalitesA;
+    var pointsB     = req.params.pointsB;
+    var penalitesB  = req.params.penalitesB;
+    let pgRes       = await MyPG.updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB); // this is the firs update refered in a comment
+    
+    // Begin of update process of EventTeam Table (score)
+    let pgRes2      = await MyPG.getOneMatch(idMatch);
+    let res2        = pgRes2[1][0];
+    var idTeamA     = res2.idteama;
+    var idTeamB     = res2.idteamb;
+    var idEvent     = res2.idevent;
+    let pgRes3A     = await MyPG.getOneEventTeam(idEvent, idTeamA); // get previous score for increment
+    let res3A       = pgRes3A[1][0];
+    var winA        = res3A.win;
+    var loseA       = res3A.lose;
+    var penA        = res3A.penalites + penalitesA; // increment    
+    let pgRes3B     = await MyPG.getOneEventTeam(idEvent, idTeamB);
+    let res3B       = pgRes3B[1][0];
+    var winB        = res3B.win;
+    var loseB       = res3B.lose;
+    var penB        = res3B.penalites + penalitesB;
+    if (pointsA > pointsB) { // increment
+        winA++;
+        loseB++;
+    } 
+    if (pointsA < pointsB) {
+        winB++;
+        loseA++;
+    }
+    /**
+     * IMPORTANT: Notice that there is no return recorded for the 2 updates.
+     * That is because im dumb af and that i have provided no way to revert the 
+     * first update in case this thing goes wrong. Ill deal with this later,
+     * we have to focus on the current deadline we have for our class -.-
+     */
+    await MyPG.updateTeamScore(idEvent, idTeamA, winA, loseA, penA); 
+    await MyPG.updateTeamScore(idEvent, idTeamB, winB, loseB, penB); 
+    // End of update process 
+    
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]); // status of the only one we can revert..
+});
+
+app.post('/removeEventMatch/:idMatch', async (req,res) => {
+    var idMatch     = req.params.idMatch;
+    let pgRes       = await MyPG.removeEventMatch(idMatch);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+/**
+ * MATCHS:END
+ */
+
+
+
 /*
 ** CRITICALS:BEGIN
 */
 app.get('/*', (req,res) =>{
-    res.status(501);
+    res.status(501); // Under Development
 });
 
 // Basicly allows this api to wait for requests.

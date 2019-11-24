@@ -1,4 +1,5 @@
-var jon = {
+var jon = 
+{
     "Methods": "/",
     "Default_Methods": "/methods :: {...}",
     "Info": "Voici notre API!",
@@ -11,11 +12,11 @@ var jon = {
                 "Obtenir_Un": "/getOneUser/<email> :: [{ user: {...} }]"
             },
             "POST":{
-                "Ajouter": "/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: 'res err'",
+                "Ajouter_Un": "/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: 'res err'",
                 "Metre_A_Jour_Info": "/updateUser/<email>/<nom>/<prenom>/<telephone>/<status> :: 'res err'", 
                 "Metre_A_Jour_Mot_De_Passe": "/updatePsw/<email>/<nouveauMotDePasse> :: 'res err'",
                 "Metre_A_Jour_Status": "/updateStatus/<email>/<status> :: 'res err'",
-                "Retirer": "/removeUser/<email> :: 'res err'"
+                "Retirer_Un": "/removeUser/<email> :: 'res err'"
             }
         },
         "Benevoles": {
@@ -39,12 +40,12 @@ var jon = {
         "Evenement": {
             "GET": {
                 "Obtenir_Tout": "/events :: [{ events: {...} }]",
-                "Obtenir_Un": "/getOneEvent/<idEvent> :: [{ Event: {...} }]"
+                "Obtenir_Un": "/getOneEvent/<idEvent> :: [{ event: {...} }]"
             },
             "POST": {
-                "Ajouter": "/addEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: 'res err'",
+                "Ajouter_Un": "/addEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: 'res err'",
                 "Metre_A_Jour": "/updateEvent/<idEvent>/<nom>/<lieu>/<nbEquipes>/<debut>/<fin> :: 'res err'",
-                "Retirer": "/remove/<idEvent> :: 'res err'"
+                "Retirer_Un": "/remove/<idEvent> :: 'res err'"
             }
         },
         "Equipes": {
@@ -53,25 +54,42 @@ var jon = {
                 "Obtenir_Un": "/getOneTeam/<idTeam> :: [{ team: {...} }]"
             },
             "POST": {
-                "Ajouter": "/addTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: 'res err'",
+                "Ajouter_Un": "/addTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: 'res err'",
                 "Metre_A_Jour": "/updateTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: 'res err'",
-                "Retirer": "/removeTeam/<idTeam> :: 'res err'"
+                "Retirer_Un": "/removeTeam/<idTeam> :: 'res err'"
             }
         },
         "Equipes_Dans_Evenement": {
             "GET": {
+                "Obtenir_Classification": "/getEventLeaderboard/<idEvent> :: [{ leaderboard: {...} }]",
                 "Obtenir_Tout": "/getAllEventTeams/<idEvent> :: [{ event_teams: {...} }]",
-                "Obtenir_Classification": "/getEventLeaderboard/<idEvent> :: [{ leaderboard: {...} }]"
+                "Obtenir_Un": "! Aucune implementation publique !"
             },
             "POST": {
-                "Ajouter": "/addTeamToEvent/<idEvent>/<idTeam> :: 'res err'",
+                "Ajouter_Un": "/addTeamToEvent/<idEvent>/<idTeam> :: 'res err'",
                 "Mettre_A_Jour_Status": "/updateTeamStatus/<idEvent>/<idTeam>/<estInscrit>/<aPaye>/<statusDepot> :: 'res err'",
-                "Mettre_A_Jour_Statistique": "/updateTeamScore/<idEvent>/<idTeam>/<win>/<lose>/<penalites> :: 'res err'",
-                "Retirer": "/removeTeamFromEvent/<idEvent>/<idTeam> :: 'res err'"
+                "Retirer_Un": "/removeTeamFromEvent/<idEvent>/<idTeam> :: 'res err'"
+            },
+            "DEPRECATED": {
+                "Mettre_A_Jour_Statistique": "/updateTeamScore/<idEvent>/<idTeam>/<win>/<lose>/<penalites> :: 'res err'"
+            }
+        },
+        "Matchs": {
+            "GET": {
+                "Obtenir_Tout_Dans_Evenement": "/getAllEventMatchs/<idEvent> :: [{ eventMatchs: {...} }]",
+                "Obtenir_Tout_Sur_Une_Equipe_Pour_Evenement": "/getOneTeamEventMatchs/<idEvent>/<idMatch> :: [{ teamMatchs: {...} }]",
+                "Obtenir_Un": "/getOneMatch/<idMatch> :: [{ match: {...} }]"
+            },
+            "POST": {
+                "Ajouter_Un": "/addMatchToEvent/<idMatch>/<idEvent>/<idTeamA>/<idTeamB>/<terrain>/<date> :: 'res err'",
+                "Mettre_A_Jour_Info": "/updateEventMatchInfo/<idMatch>/<terrain>/<date> :: 'res err'",
+                "Envoyer_Resultat_Match": "/compileMatchScore/<idMatch>/<pointsA>/<penalitesA>/<pointsB>/<penalitesB> :: 'res err'",
+                "Retirer_Un": "/removeEventMatch/<idMatch> :: 'res err'"
             }
         }
     }
-};
+}
+;
 
 function output(inp) {
     document.body.appendChild(document.createElement('pre')).innerHTML = inp;

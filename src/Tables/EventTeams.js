@@ -4,6 +4,7 @@
  * 
  * getAllEventTeams()
  * getEventLeaderboard()
+ * getOneTeamInEvent()
  * addTeamToEvent()
  * updateTeamStatus()
  * updateTeamScore()
@@ -43,6 +44,19 @@ class Events {
           .catch(e => {console.error(e.stack); code = 1;});
         client.release();
         return  [code, temp];
+    }
+
+    async getOneEventTeam(idEvent, idTeam) {
+      var code = 0, temp = null;
+      const client = await this.pool.connect();
+      const queryText = "SELECT * FROM EventTeams WHERE idEvent = $1 AND idTeam = $2";
+      const queryValues = [idEvent, idTeam];
+      await client
+        .query(queryText, queryValues)
+        .then(result => temp = result.rows)
+        .catch(e => {console.error(e.stack); code = 1;});
+      client.release();
+      return  [code, temp];
     }
 
     // Ajouter une Equipe a un Evenement

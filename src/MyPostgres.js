@@ -4,9 +4,11 @@ const Creds       = require('./Tables/Creds.js');
 const Events      = require('./Tables/Events.js');
 const Teams       = require('./Tables/Teams.js');
 const EventTeams  = require('./Tables/EventTeams.js');
+const Matchs      = require('./Tables/Matchs.js');
 
 module.exports =
 class MyPostgres {
+
   /*
   ** CRITICALS:BEGIN
   */
@@ -18,6 +20,7 @@ class MyPostgres {
     this.events   = new Events(this.pool); 
     this.teams    = new Teams(this.pool);
     this.eTeams   = new EventTeams(this.pool);
+    this.matchs   = new Matchs(this.pool);
   }
   /*
   ** CRITICALS:END
@@ -151,6 +154,8 @@ class MyPostgres {
    * TEAMS:END
    */
 
+
+
   /**
    * EVENT-TEAMS:BEGIN
    */
@@ -160,6 +165,10 @@ class MyPostgres {
 
   async getEventLeaderboard(idEvent) {
     return await this.eTeams.getEventLeaderboard(idEvent);
+  }
+
+  async getOneEventTeam(idEvent, idTeam) {
+    return await this.eTeams.getOneEventTeam(idEvent, idTeam);
   }
 
   async addTeamToEvent(idEvent, idTeam) {
@@ -179,6 +188,43 @@ class MyPostgres {
   }
   /**
    * EVENT-TEAMS:END
+   */
+
+
+
+  /** 
+   * MATCHS:BEGIN
+   */
+  async getAllEventMatchs(idEvent) {
+    return await this.matchs.getAllEventMatchs(idEvent);
+  }
+
+  async getOneMatch(idMatch) {
+    return await this.matchs.getOneMatch(idMatch);
+  }
+
+  async getOneTeamEventMatchs(idEvent, idTeam) {
+    return await this.matchs.getOneTeamEventMatchs(idEvent, idTeam);
+  }
+
+  async addMatchToEvent(idMatch, idEvent, idTeamA, idTeamB, terrain, date) {
+    return await this.matchs.addMatchToEvent(idMatch, idEvent, idTeamA, idTeamB, terrain, date);
+  }
+
+  async updateEventMatchInfo(idMatch, terrain, date) {
+    return await this.matchs.updateEventMatchInfo(idMatch, terrain, date);
+  }
+
+  // refered in ../index.js as /compileMatchScore/...
+  async updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB) {
+    return await this.matchs.updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB);
+  }
+
+  async removeEventMatch(idMatch) {
+    return await this.matchs.removeEventMatch(idMatch);
+  }
+  /**
+   * MATCHS:END
    */
 }
 /*
