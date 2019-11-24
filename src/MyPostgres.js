@@ -1,8 +1,9 @@
-const { Pool } = require('pg');
-const Users   = require('./Tables/Users.js');
-const Creds   = require('./Tables/Creds.js');
-const Events  = require('./Tables/Events.js');
-const Teams   = require('./Tables/Teams.js')
+const { Pool }    = require('pg');
+const Users       = require('./Tables/Users.js');
+const Creds       = require('./Tables/Creds.js');
+const Events      = require('./Tables/Events.js');
+const Teams       = require('./Tables/Teams.js');
+const EventTeams  = require('./Tables/EventTeams.js');
 
 module.exports =
 class MyPostgres {
@@ -10,12 +11,13 @@ class MyPostgres {
   ** CRITICALS:BEGIN
   */
   constructor() {
-    this.connectionString = "psotgresql://Lucien:lu-db@35.245.152.215:5432/impro-bd";
+    this.connectionString = "postgresql://Lucien:lu-db@35.245.152.215:5432/impro-bd";
     this.pool     = new Pool({ connectionString: this.connectionString });
     this.users    = new Users(this.pool);
     this.creds    = new Creds(this.pool);
     this.events   = new Events(this.pool); 
     this.teams    = new Teams(this.pool);
+    this.eTeams   = new EventTeams(this.pool);
   }
   /*
   ** CRITICALS:END
@@ -123,31 +125,61 @@ class MyPostgres {
 
 
 
-   /**
-    * TEAMS:BEGIN
-    */
-   async getAllTeams() {
-     return await this.teams.getAllTeams();
-   }
+  /**
+   * TEAMS:BEGIN
+   */
+  async getAllTeams() {
+    return await this.teams.getAllTeams();
+  }
 
-   async getOneTeam(id) {
-     return await this.teams.getOneTeam(id);
-   }
+  async getOneTeam(id) {
+    return await this.teams.getOneTeam(id);
+  }
 
-   async addTeam(id, nom, ecole, nb, coach, telephone, email) {
-     return await this.teams.addTeam(id, nom, ecole, nb, coach, telephone, email);
-   }
+  async addTeam(id, nom, ecole, nb, coach, telephone, email) {
+    return await this.teams.addTeam(id, nom, ecole, nb, coach, telephone, email);
+  }
 
-   async updateTeam(id, nom, ecole, nb, coach, telephone, email) {
-     return await this.teams.updateTeam(id, nom, ecole, nb, coach, telephone, email);
-   }
+  async updateTeam(id, nom, ecole, nb, coach, telephone, email) {
+    return await this.teams.updateTeam(id, nom, ecole, nb, coach, telephone, email);
+  }
 
-   async removeTeam(id) {
-     return await this.teams.removeTeam(id);
-   }
-   /**
-    * TEAMS:END
-    */
+  async removeTeam(id) {
+    return await this.teams.removeTeam(id);
+  }
+  /**
+   * TEAMS:END
+   */
+
+  /**
+   * EVENT-TEAMS:BEGIN
+   */
+  async getAllEventTeams(idEvent) {
+    return await this.eTeams.getAllEventTeams(idEvent);
+  }
+
+  async getEventLeaderboard(idEvent) {
+    return await this.eTeams.getEventLeaderboard(idEvent);
+  }
+
+  async addTeamToEvent(idEvent, idTeam) {
+    return await this.eTeams.addTeamToEvent(idEvent, idTeam);
+  }
+
+  async updateTeamStatus(idEvent, idTeam, estInscrit, aPaye, status_depot) {
+    return await this.eTeams.updateTeamStatus(idEvent, idTeam, estInscrit, aPaye, status_depot);
+  }
+
+  async updateTeamScore(idEvent, idTeam, win, lose, penalites) {
+    return await this.eTeams.updateTeamScore(idEvent, idTeam, win, lose, penalites);
+  }
+
+  async removeTeamFromEvent(idEvent, idTeam) {
+    return await this.eTeams.removeTeamFromEvent(idEvent, idTeam);
+  }
+  /**
+   * EVENT-TEAMS:END
+   */
 }
 /*
 ** END OF FILE

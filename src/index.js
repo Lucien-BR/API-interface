@@ -1,4 +1,4 @@
-require('@google-cloud/debug-agent').start();
+//require('@google-cloud/debug-agent').start();
 const jon           = require("../public/jon.json");
 const MyPostgres    = require("./MyPostgres");
 const express       = require('express');
@@ -28,6 +28,8 @@ var options = {
   }
 
 app.use(express.static('public', options));
+
+
 
 /*
 ** DEAFULT:BEGIN
@@ -60,7 +62,7 @@ app.get("/benevoles", async (req,res) => {
     var code        = 200; // OK
     if (pgRes[0] != 0) { code = 400; } // Bad Request
     res.status(code).json([{ benevoles: pgRes[1].rows }]);
-})
+});
 
 app.get('/getOneUser/:email', async (req,res) => {
     var email       = req.params.email;
@@ -76,7 +78,7 @@ app.get('/getOneBenevole/:email', async (req,res) => {
     var code        = 200; // OK
     if (pgRes[0] != 0) { code = 400; } // Bad Request
     res.status(code).json([{ benevole: pgRes[1].rows }]);
-})
+});
 
 // TODO: DANS LE BACKEND, FAIRE EN SORTE QU'A L'AJOUT D'UN USER, 
 // POUR QUE CA FASSE AUTOMATIQUEMENT /loggin APRES pour lastCon et l'adress IPv6
@@ -163,6 +165,8 @@ app.get('/login/:email/:psw/:ip', async (req,res) => {
 ** AUTHENTIFICATION:END
 */
 
+
+
 /*
 ** EVENTS:BEGIN
 */
@@ -217,6 +221,8 @@ app.post('/removeEvent/:id', async (req,res) => {
 /*
 ** EVENTS:END
 */
+
+
 
 /**
  * TEAMS:BEGIN
@@ -273,6 +279,72 @@ app.post('/removeTeam/:id', async (req,res) => {
 });
 /**
  * TEAMS:END
+ */
+
+
+
+/**
+ * EVENT-TEAMS:BEGIN
+ */
+app.get('/getAllEventTeams/:idEvent', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    let pgRes       = await MyPG.getAllEventTeams(idEvent);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ event_teams: pgRes[1] }]);
+});
+
+app.get('/getEventLeaderboard/:idEvent', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    let pgRes       = await MyPG.getEventLeaderboard(idEvent);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ leaderboard: pgRes[1] }]);
+});
+
+app.post('/addTeamToEvent/:idEvent/:idTeam', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    var idTeam      = req.params.idTeam;
+    let pgRes       = await MyPG.addTeamToEvent(idEvent, idTeam);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+app.post('/updateTeamStatus/:idEvent/:idTeam/:estInscrit/:aPaye/:statusDepot', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    var idTeam      = req.params.idTeam;
+    var estInscrit  = req.params.estInscrit;
+    var aPaye       = req.params.aPaye;
+    var statusDepot = req.params.statusDepot;
+    let pgRes       = await MyPG.updateTeamStatus(idEvent, idTeam, estInscrit, aPaye, statusDepot);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+app.post('/updateTeamScore/:idEvent/:idTeam/:win/:lose/:penalites', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    var idTeam      = req.params.idTeam;
+    var win         = req.params.win;
+    var lose        = req.params.lose;
+    var penalites   = req.params.penalites;
+    let pgRes       = await MyPG.updateTeamScore(idEvent, idTeam, win, lose, penalites);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+app.post('/removeTeamFromEvent/:idEvent/:idTeam', async (req, res) => {
+    var idEvent     = req.params.idEvent;
+    var idTeam      = req.params.idTeam;
+    let pgRes       = await MyPG.removeTeamFromEvent(idEvent, idTeam);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+/**
+ * EVENT-TEAMS:END
  */
 
 

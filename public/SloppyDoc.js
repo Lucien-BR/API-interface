@@ -8,7 +8,7 @@ var jon = {
         "Utilisateur": {
             "GET":{
                 "Obtenir_Tout": "/users :: [{ users: {...} }]",
-                "Obtenir_Un": "/getOneUser :: [{ user: {...} }]"
+                "Obtenir_Un": "/getOneUser/<email> :: [{ user: {...} }]"
             },
             "POST":{
                 "Ajouter": "/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: 'res err'",
@@ -16,6 +16,15 @@ var jon = {
                 "Metre_A_Jour_Mot_De_Passe": "/updatePsw/<email>/<nouveauMotDePasse> :: 'res err'",
                 "Metre_A_Jour_Status": "/updateStatus/<email>/<status> :: 'res err'",
                 "Retirer": "/removeUser/<email> :: 'res err'"
+            }
+        },
+        "Benevoles": {
+            "GET": {
+                "Obtenir_Tout": "/users :: [{ benevoles: {...} }]",
+                "Obtenir_Un": "/getOneBenevole/<email> :: [{ benevole: {...} }]"
+            },
+            "POST": {
+                
             }
         },
         "Authentification": {
@@ -47,6 +56,18 @@ var jon = {
                 "Ajouter": "/addTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: 'res err'",
                 "Metre_A_Jour": "/updateTeam/<idTeam>/<nomEquipe>/<nbJoueurs>/<coach>/<telephone>/<email> :: 'res err'",
                 "Retirer": "/removeTeam/<idTeam> :: 'res err'"
+            }
+        },
+        "Equipes_Dans_Evenement": {
+            "GET": {
+                "Obtenir_Tout": "/getAllEventTeams/<idEvent> :: [{ event_teams: {...} }]",
+                "Obtenir_Classification": "/getEventLeaderboard/<idEvent> :: [{ leaderboard: {...} }]"
+            },
+            "POST": {
+                "Ajouter": "/addTeamToEvent/<idEvent>/<idTeam> :: 'res err'",
+                "Mettre_A_Jour_Status": "/updateTeamStatus/<idEvent>/<idTeam>/<estInscrit>/<aPaye>/<statusDepot> :: 'res err'",
+                "Mettre_A_Jour_Statistique": "/updateTeamScore/<idEvent>/<idTeam>/<win>/<lose>/<penalites> :: 'res err'",
+                "Retirer": "/removeTeamFromEvent/<idEvent>/<idTeam> :: 'res err'"
             }
         }
     }

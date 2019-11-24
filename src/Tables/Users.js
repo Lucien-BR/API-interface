@@ -4,6 +4,7 @@
  * getAllUsers()
  * getAllBenevoles()
  * getOneUsers()
+ * getOneBenevole()
  * addUser()
  * updateUser()
  * updateUserStatus()
@@ -155,7 +156,7 @@ class Users {
             }
           })().catch(e => {console.error(e.stack); er = e});
         return [code, er];
-      }
+    }
 
 }
 /**
