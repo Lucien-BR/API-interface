@@ -140,6 +140,27 @@ app.post('/updatePsw/:email/:psw', async (req,res) => {
 */
 
 
+/**
+ * SCHEDULE:BEGIN
+ */
+app.get('/getDispo/:idEvent', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    let pgRes       = await MyPG.something(idEvent);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ dispo: pgRes[1] }]);
+});
+app.post('/saveDispo/:dJon', async (req,res) => {
+    var dJon        = JSON.parse(req.params.dJon);
+    console.log(dJon);
+    let pgRes       = "To come." + dJon; //methods to come.
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+/**
+ * SCHEDULE:END
+ */
 
 /*
 ** AUTHENTIFICATION:BEGIN

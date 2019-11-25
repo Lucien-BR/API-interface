@@ -31,7 +31,8 @@ var jon =
         "Authentification": {
             "GET": {
                 "Automatique": "/autoLogin/<IPv6> :: [{ autoLoginStatus: 'timedOutConn / unknownConn / <email>' }]",
-                "Regulier": "/login/<email>/<motDePasse>/<IPv6> :: [{ loginStatus: 'wrondCred / unknownCred / loggedIn' }]"
+                "Regulier": "/login/<email>/<motDePasse>/<IPv6> :: [{ loginStatus: 'wrondCred / unknownCred / loggedIn' }]",
+                "Simple": "/login2/<email>/<motDePasse> :: [{ login: 'true / false' }]"
             },
             "POST": {
 
