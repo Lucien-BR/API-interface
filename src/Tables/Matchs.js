@@ -111,7 +111,7 @@ class Matchs {
             const client = await this.pool.connect();
             try {
               await client.query('BEGIN');
-              const queryText = 'UPDATE Matchs SET pointsA = $2, penalitesA = $3, pointsB = $4, penalitesB = $5 WHERE idMatch = $1';
+              const queryText = 'UPDATE Matchs SET pointsA = $2, penalitesA = $3, pointsB = $4, penalitesB = $5, wasUpdated = 1 WHERE idMatch = $1';
               const queryValues = [idMatch, pointsA, penalitesA, pointsB, penalitesB];
               await client.query(queryText, queryValues);
               await client.query('COMMIT');
@@ -146,6 +146,18 @@ class Matchs {
             }
           })().catch(e => {console.error(e.stack); er = e});
         return [code, er];
-      }
+    }
 
+    async wasEventMatchUpdated(idMatch) {
+      var code = 0, temp;
+      const client = await this.pool.connect();
+      const queryText = 'SELECT wasUpdated FROM Matchs WHERE idMatch = $1';
+      const queryValues = [idMatch];
+      await client
+        .query(queryText, queryValues)
+        .then(result => temp = result.rows)
+        .catch(e => {console.error(e.stack); code = 1;});
+      client.release();
+      return  [code, temp];
+    }
 }

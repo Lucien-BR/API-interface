@@ -3,3 +3,10 @@ https://expressjs.com/en/advanced/best-practice-security.html
 
 pour mes default returns: get/ vs get/. 
 https://stackoverflow.com/questions/4810841/how-can-i-pretty-print-json-using-javascript
+
+
+
+what if: dans la bd on mets un intervalle d'heures qui ne permet pas deux trous dans une journnee (atm)
+
+puis dans le code on fait que ya une liste qui se crer par benevole pour ensuite etre remplis en fonction de 
+l'attribution des taches.

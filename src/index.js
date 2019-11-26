@@ -9,6 +9,8 @@ const app           = express();
 const port          = 8080;
 const MyPG          = new MyPostgres();
 
+const sleep = m => new Promise(r => setTimeout(r, m));
+
 app.use(cors());
 app.use(helmet());
 app.use(bodyParser.text({ type: 'text/html' })); // Mainly this one
@@ -79,20 +81,24 @@ app.get('/getOneBenevole/:email', async (req,res) => {
     if (pgRes[0] != 0) { code = 400; } // Bad Request
     res.status(code).json([{ benevole: pgRes[1].rows }]);
 });
-
 // TODO: DANS LE BACKEND, FAIRE EN SORTE QU'A L'AJOUT D'UN USER, 
 // POUR QUE CA FASSE AUTOMATIQUEMENT /loggin APRES pour lastCon et l'adress IPv6
-app.post('/addUser/:email/:nom/:prenom/:telephone/:status/:psw', async (req,res) => {
+app.post('/addUser/:email/:nom/:prenom/:telephone/:status/:psw/:Q1/:R1', async (req,res) => {
     var email       = req.params.email;
     var nom         = req.params.nom;
     var prenom      = req.params.prenom;
     var telephone   = req.params.telephone;
     var status      = req.params.status;
     var psw         = req.params.psw;
+    var Q1          = req.params.Q1;
+    var R1          = req.params.R1;
     let pgRes       = await MyPG.addUser(email, nom, prenom, telephone, status);
-    let pgRes2      = await MyPG.addCred(email, psw, status);
+    console.time("Slept for");// set time
+    await sleep(500);
+    console.timeEnd("Slept for"); // show time
+    let pgRes2      = await MyPG.addCred(email, psw, status, Q1, R1);
     var code        = 201; // Created
-    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406;} // Not Acceptable
+    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).end("res: "+code+" err: "+pgRes2[1]);
 });
 
@@ -190,6 +196,15 @@ app.get('/login2/:email/:psw', async (req,res) => {
     var code        = 202; // Accepted
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).json([{ loginStatus: pgRes[1] }]);
+});
+
+app.get('/gimmeQR/:email', async (req,res) => {
+    var email       = req.params.email;
+    var R1          = req.params.R1;
+    let pgRes       = await MyPG.gimmeQR(email, R1);
+    var code        = 200; // OK
+    if (pgRes[0] != 0) { code = 400; } // Bad Request
+    res.status(code).json([{ isAnswerGood: pgRes[1].rows }]);
 });
 /*
 ** AUTHENTIFICATION:END
@@ -440,6 +455,7 @@ app.post('/updateEventMatchInfo/:idMatch/:terrain/:date', async (req,res) => {
  * refered in Mypostgres.js and Matchs.js as updateEventMatchScore()
 */
 app.post('/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB', async (req,res) => {
+    let specialRes  = await MyPG.wasEventMatchUpdated(idMatch);
     var idMatch     = req.params.idMatch;
     var pointsA     = req.params.pointsA;
     var penalitesA  = req.params.penalitesA;
@@ -447,6 +463,7 @@ app.post('/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB'
     var penalitesB  = req.params.penalitesB;
     let pgRes       = await MyPG.updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB); // this is the firs update refered in a comment
     
+    if (specialRes[1] != true) {
     // Begin of update process of EventTeam Table (score)
     let pgRes2      = await MyPG.getOneMatch(idMatch);
     let res2        = pgRes2[1][0];
@@ -478,9 +495,10 @@ app.post('/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB'
      * we have to focus on the current deadline we have for our class -.-
      */
     await MyPG.updateTeamScore(idEvent, idTeamA, winA, loseA, penA); 
-    await MyPG.updateTeamScore(idEvent, idTeamB, winB, loseB, penB); 
+    await MyPG.updateTeamScore(idEvent, idTeamB, winB, loseB, penB);    
+    }
     // End of update process 
-    
+
     var code        = 202; // Accepted
     if (pgRes[0] != 0) { code = 406; } // Not Acceptable
     res.status(code).end("res: "+code+" err: "+pgRes[1]); // status of the only one we can revert..

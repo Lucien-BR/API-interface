@@ -100,37 +100,39 @@ class Creds {
       return [code, temp];
     }
 
-        // Authentification bs
-        async login2(email, psw) {
-          var temp = null, code = 0;
-          const client = await this.pool.connect();
-          const queryText = 
-                "SELECT CASE WHEN EXISTS ( "+ 
-                  "SELECT * FROM Credentials "+
-                  "WHERE email = $1 AND psw = $2"+
-                ") "+
-                  "THEN ('true') "+ 
-                  "ELSE ('false') "+
-                  "END ";
-          const queryValues = [email, psw];
-          await client.query(queryText, queryValues)
-            .then(res => temp = res.rows[0].case )
-            .catch(e => {console.error(e.stack); code = 1;});
-          client.release();
-          //console.log(temp);
-          return [code, temp];
-        }
+    // Authentification bs
+    async login2(email, psw) {
+      var temp = null, code = 0;
+      const client = await this.pool.connect();
+      const queryText = 
+            "SELECT CASE WHEN EXISTS ( "+ 
+              "SELECT * FROM Credentials "+
+              "WHERE email = $1 AND psw = $2"+
+            ") "+
+              "THEN ('true') "+ 
+              "ELSE ('false') "+
+              "END ";
+      const queryValues = [email, psw];
+      await client.query(queryText, queryValues)
+        .then(res => temp = res.rows[0].case )
+        .catch(e => {console.error(e.stack); code = 1;});
+      client.release();
+      //console.log(temp);
+      return [code, temp];
+    }
+
+    
 
 
     // Ajouter Credential
-    async addCred(email, psw, status) {
+    async addCred(email, psw, status, Q1, R1) {
       var er = null, code = 0;
       ;(async () => {
           const client = await this.pool.connect();
           try {
             await client.query('BEGIN');
-            const queryText = 'INSERT INTO Credentials(email, psw, status) VALUES($1, $2, $3)';
-            const queryValues = [email, psw, status];
+            const queryText = 'INSERT INTO Credentials(email, psw, status, Q1, R1) VALUES($1, $2, $3, $4, $5)';
+            const queryValues = [email, psw, status, Q1, R1];
             await client.query(queryText, queryValues);
             await client.query('COMMIT');
           } catch (e) {
@@ -210,6 +212,18 @@ class Creds {
           return [code, er];
       }
 
+    async gimmeQR(email) {
+      var code = 0, temp;
+      const client = await this.pool.connect();
+      const queryText = 'SELECT (Q1,R1) FROM Credentials WHERE email = $1';
+      const queryValues = [email];
+      await client
+        .query(queryText, queryValues)
+        .then(result => temp = result) // prob. redondant
+        .catch(e => {console.error(e.stack); code = 1;});
+      client.release();
+      return  [code, temp];
+    }
 }
 /**
  * END OF FILE

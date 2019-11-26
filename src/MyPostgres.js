@@ -83,8 +83,8 @@ class MyPostgres {
     return await this.creds.login(email, psw, ip);
   }
 
-  async addCred(email, psw, status) {
-    return await this.creds.addCred(email, psw, status);
+  async addCred(email, psw, status, Q1, R1) {
+    return await this.creds.addCred(email, psw, status, Q1, R1);
   }
 
   async updateCredPsw(email, psw) {
@@ -97,6 +97,10 @@ class MyPostgres {
 
   async removeCred(email) {
     return await this.creds.removeCred(email);
+  }
+
+  async gimmeQR(email) {
+    return await this.creds.gimmeQR(email);
   }
   /*
   ** CREDENTIALS:END
@@ -226,6 +230,10 @@ class MyPostgres {
 
   async removeEventMatch(idMatch) {
     return await this.matchs.removeEventMatch(idMatch);
+  }
+
+  async wasEventMatchUpdated(idMatch) {
+    return await this.matchs.wasEventMatchUpdated(idMatch); // TODO: to be completed
   }
   /**
    * MATCHS:END
