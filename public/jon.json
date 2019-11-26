@@ -11,7 +11,7 @@
                 "Obtenir_Un": "/getOneUser/<email> :: [{ user: {...} }]"
             },
             "POST":{
-                "Ajouter_Un": "/addUser/<email>/<nom>/<prenom>/<telephone>/<status>/<motDePasse> :: 'res err'",
+                "Ajouter_Un": "/addUser/<email>/<nom>/<prenom>/<telephone>/<status value in ['A'dmin, 'B'enevole, 'P'ublic, 'D'emande]>/<motDePasse>/<Question1>/<Reponse1> :: 'res err'",
                 "Metre_A_Jour_Info": "/updateUser/<email>/<nom>/<prenom>/<telephone>/<status> :: 'res err'", 
                 "Metre_A_Jour_Mot_De_Passe": "/updatePsw/<email>/<nouveauMotDePasse> :: 'res err'",
                 "Metre_A_Jour_Status": "/updateStatus/<email>/<status> :: 'res err'",
@@ -31,7 +31,8 @@
             "GET": {
                 "Automatique": "/autoLogin/<IPv6> :: [{ autoLoginStatus: 'timedOutConn / unknownConn / <email>' }]",
                 "Regulier": "/login/<email>/<motDePasse>/<IPv6> :: [{ loginStatus: 'wrondCred / unknownCred / loggedIn' }]",
-                "Simple": "/login2/<email>/<motDePasse> :: [{ login: 'true / false' }]"
+                "Simple": "/login2/<email>/<motDePasse> :: [{ login: 'true / false' }]",
+                "Obtenir_Qustion_Reponse": "/gimmeQR/<email> :: [{ questionReponse: {Q, R} }]"
             },
             "POST": {
 
@@ -67,7 +68,7 @@
             },
             "POST": {
                 "Ajouter_Un": "/addTeamToEvent/<idEvent>/<idTeam> :: 'res err'",
-                "Mettre_A_Jour_Status": "/updateTeamStatus/<idEvent>/<idTeam>/<estInscrit>/<aPaye>/<statusDepot> :: 'res err'",
+                "Mettre_A_Jour_Status": "/updateTeamStatus/<idEvent>/<idTeam>/<estInscrit>/<aPaye>/<statusDepot value in ['ATT'ente, 'REC'ue, 'REM'is]> :: 'res err'",
                 "Retirer_Un": "/removeTeamFromEvent/<idEvent>/<idTeam> :: 'res err'"
             },
             "DEPRECATED": {
@@ -85,6 +86,32 @@
                 "Mettre_A_Jour_Info": "/updateEventMatchInfo/<idMatch>/<terrain>/<date> :: 'res err'",
                 "Envoyer_Resultat_Match": "/compileMatchScore/<idMatch>/<pointsA>/<penalitesA>/<pointsB>/<penalitesB> :: 'res err'",
                 "Retirer_Un": "/removeEventMatch/<idMatch> :: 'res err'"
+            }
+        },
+        "Disponibilities": {
+            "GET": {
+                "Obtenir_Benevoles_A_L'Horaire": "/getAllScheduled/<idEvent> :: RETOURNE TOUTE LA TABLE POUR L'INSTANT, A DEFINIR...",
+                "Obtenir_Benevoles_Disponible_Pour_Event": "/getAllAvailableForEvent/<idEvent> :: [{ allAvailable: {...} }]"
+            },
+            "POST": {
+                "Ajouter_Plusieurs_Dispos": {
+                    "Methode": "/addDispos/<idEvent>/<email>/<JSON> :: 'res err'",
+                    "Explications": "Cette methode requiere que JSON ait cette exacte structure et ses clefs (prochain point)",
+                    "JSON":[
+                        {
+                            "date": "<date1 (DATE) pour la premiere plage horaire (il peut y en avoir autant que souhaite>",
+                            "hDebut": "<heure Debut Periode Disponibilite (TIME)>",
+                            "nbHeure": "<nbHeure Disponible Pour Cette Plage Horaire (INT)>"
+                        },
+                        {
+                            "date": "<date2 et on replique le moule, a partir du niveau sous JSON, excluant JSON (on commence avec les crochets [ ]>",
+                            "hDebut": "<Heure sous forma 11:00:00>",
+                            "nbHeure": "<Pour m'envoyer le tout, fait JSON.stringify(tonJson) et envoie moi le resultat a la place de JSON dans la methode>"
+                        },
+                        {"etc":"..."}
+                    ]
+                },
+                "Retirer_Un": "/removeDispo/<idEvent>/<email>/<date> :: 'res err'"
             }
         }
     }

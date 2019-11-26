@@ -5,6 +5,7 @@ const Events      = require('./Tables/Events.js');
 const Teams       = require('./Tables/Teams.js');
 const EventTeams  = require('./Tables/EventTeams.js');
 const Matchs      = require('./Tables/Matchs.js');
+const Dispos      = require('./Tables/Dispos.js')
 
 module.exports =
 class MyPostgres {
@@ -21,15 +22,13 @@ class MyPostgres {
     this.teams    = new Teams(this.pool);
     this.eTeams   = new EventTeams(this.pool);
     this.matchs   = new Matchs(this.pool);
+    this.dispos   = new Dispos(this.pool);
   }
   /*
   ** CRITICALS:END
   */
  
-// to be removed
-  async login2(email, psw) {
-    return await this.creds.login2(email, psw);
-  }
+
 
 
   /*
@@ -81,6 +80,11 @@ class MyPostgres {
 
   async login(email, psw, ip) {
     return await this.creds.login(email, psw, ip);
+  }
+
+  // TODO: to be removed
+  async login2(email, psw) {
+    return await this.creds.login2(email, psw);
   }
 
   async addCred(email, psw, status, Q1, R1) {
@@ -237,6 +241,28 @@ class MyPostgres {
   }
   /**
    * MATCHS:END
+   */
+
+  /**
+   * DISPONIBILITIES:BEGIN
+   */
+  async getAllScheduled(idEvent) {
+    return await this.dispos.getAllScheduled(idEvent);
+  }
+
+  async getAllAvailableForEvent(idEvent) {
+    return await this.dispos.getAllAvailableForEvent(idEvent);
+  }
+
+  async addDispos(idEvent, email, date, hDebut, nbHeures, grid) {
+    return await this.dispos.addDispos(idEvent, email, date, hDebut, nbHeures, grid);
+  }
+
+  async removeDispo(idEvent, email, date) {
+    return await this.dispos.removeDispo(idEvent, email, date);
+  }
+  /**
+   * DISPONIBILITIES:END
    */
 }
 /*

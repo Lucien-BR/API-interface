@@ -204,7 +204,7 @@ app.get('/gimmeQR/:email', async (req,res) => {
     let pgRes       = await MyPG.gimmeQR(email, R1);
     var code        = 200; // OK
     if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json([{ isAnswerGood: pgRes[1].rows }]);
+    res.status(code).json([{ questionReponse: pgRes[1].rows }]);
 });
 /*
 ** AUTHENTIFICATION:END
@@ -515,6 +515,77 @@ app.post('/removeEventMatch/:idMatch', async (req,res) => {
  * MATCHS:END
  */
 
+
+
+/**
+ * DISPONIBILITIES:BEGIN
+ */
+app.get('/getAllScheduled/:idEvent', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    let pgRes       = await MyPG.getAllScheduled(idEvent);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ allScheduled: pgRes[1] }]);
+});
+
+app.get('/getAllAvailableForEvent/:idEvent', async (req,res) =>{
+    var idEvent     = req.params.idEvent;
+    let pgRes       = await MyPG.getAllAvailableForEvent(idEvent);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).json([{ allAvailable: pgRes[1] }]);
+});
+
+/**
+ * WHERE jon is of structure:
+ * [
+ *      {
+ *          "date":"DATE",
+ *          "hDebut":"TIME",
+ *          "nbHeure":"INT"
+ *      },
+ *      {
+ *          "date":"DATE",
+ *          "hDebut":"TIME",
+ *          "nbHeure":"INT"
+ *      },
+ *      {...}
+ * ]
+ */
+app.post('/addDispos/:idEvent/:email/:jon', async (req,res) => {
+    //var jon         = JSON.parse(req.params.jon); // can't test on my own
+
+    var jon = [{"date":"2019-11-18","hDebut":"12:00:00","nbHeures":10},
+           {"date":"2019-11-19","hDebut":"08:00:00","nbHeures":6}]; // TODO: REMOVE THIS AFTERWARDS    
+    var idEvent     = req.params.idEvent;
+    var email       = req.params.email;
+    var code        = 202; // Accepted
+    let pgRes;
+    for(var i=0;i<jon.length;i++) {
+        var date = jon[i].date;
+        var hDebut = jon[i].hDebut;
+        var hTemp = parseInt(hDebut.charAt(0).concat(hDebut.charAt(1))); // to get hours in hDebut
+        var nbHeures = jon[i].nbHeures;
+        var grid = [0,0,0,0,0,0,  0,0,0,0,0,0,  0,0,0,0,0,0,  0,0,0,0,0,0]; //0 non dispo, 1 dispo 2 occupe
+        for (var j=0;j<nbHeures;j++) { grid[hTemp+j] = 1; } // flip les dispos dans grid
+        pgRes       = await MyPG.addDispos(idEvent, email, date, hDebut, nbHeures, grid);
+        if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    }
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+
+app.post('/removeDispo/:idEvent/:email/:date', async (req,res) => {
+    var idEvent     = req.params.idEvent;
+    var email       = req.params.email;
+    var date        = req.params.date;
+    let pgRes       = await MyPG.removeDispo(idEvent, email, date);
+    var code        = 202; // Accepted
+    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
+    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+});
+/**
+ * DISPONIBILITIES:END
+ */
 
 
 /*
