@@ -1,39 +1,35 @@
-const { Pool }    = require('pg');
-const Users       = require('./Tables/Users.js');
-const Creds       = require('./Tables/Creds.js');
-const Events      = require('./Tables/Events.js');
-const Teams       = require('./Tables/Teams.js');
-const EventTeams  = require('./Tables/EventTeams.js');
-const Matchs      = require('./Tables/Matchs.js');
-const Dispos      = require('./Tables/Dispos.js')
+const { Pool } = require("pg");
+const Users = require("./Tables/Users.js");
+const Creds = require("./Tables/Creds.js");
+const Events = require("./Tables/Events.js");
+const Teams = require("./Tables/Teams.js");
+const EventTeams = require("./Tables/EventTeams.js");
+const Matchs = require("./Tables/Matchs.js");
+const Dispos = require("./Tables/Dispos.js");
 
-module.exports =
-class MyPostgres {
-
+module.exports = class MyPostgres {
   /*
-  ** CRITICALS:BEGIN
-  */
+   ** CRITICALS:BEGIN
+   */
   constructor() {
-    this.connectionString = "postgresql://Lucien:lu-db@35.245.152.215:5432/impro-bd";
-    this.pool     = new Pool({ connectionString: this.connectionString });
-    this.users    = new Users(this.pool);
-    this.creds    = new Creds(this.pool);
-    this.events   = new Events(this.pool); 
-    this.teams    = new Teams(this.pool);
-    this.eTeams   = new EventTeams(this.pool);
-    this.matchs   = new Matchs(this.pool);
-    this.dispos   = new Dispos(this.pool);
+    this.connectionString =
+      "postgresql://Lucien:lu-db@35.245.152.215:5432/impro-bd";
+    this.pool = new Pool({ connectionString: this.connectionString });
+    this.users = new Users(this.pool);
+    this.creds = new Creds(this.pool);
+    this.events = new Events(this.pool);
+    this.teams = new Teams(this.pool);
+    this.eTeams = new EventTeams(this.pool);
+    this.matchs = new Matchs(this.pool);
+    this.dispos = new Dispos(this.pool);
   }
   /*
-  ** CRITICALS:END
-  */
- 
-
-
+   ** CRITICALS:END
+   */
 
   /*
-  ** USERS:BEGIN
-  */
+   ** USERS:BEGIN
+   */
   async getAllUsers() {
     return await this.users.getAllUsers();
   }
@@ -67,13 +63,12 @@ class MyPostgres {
   }
 
   /*
-  ** USERS:END
-  */
-
+   ** USERS:END
+   */
 
   /*
-  ** CREDENTIALS:BEGIN
-  */
+   ** CREDENTIALS:BEGIN
+   */
   async autoLogin(ip) {
     return await this.creds.autoLogin(ip);
   }
@@ -107,10 +102,8 @@ class MyPostgres {
     return await this.creds.gimmeQR(email);
   }
   /*
-  ** CREDENTIALS:END
-  */
-
-
+   ** CREDENTIALS:END
+   */
 
   /**
    * EVENTS:BEGIN
@@ -138,8 +131,6 @@ class MyPostgres {
    * EVENTS:END
    */
 
-
-
   /**
    * TEAMS:BEGIN
    */
@@ -152,11 +143,27 @@ class MyPostgres {
   }
 
   async addTeam(id, nom, ecole, nb, coach, telephone, email) {
-    return await this.teams.addTeam(id, nom, ecole, nb, coach, telephone, email);
+    return await this.teams.addTeam(
+      id,
+      nom,
+      ecole,
+      nb,
+      coach,
+      telephone,
+      email
+    );
   }
 
   async updateTeam(id, nom, ecole, nb, coach, telephone, email) {
-    return await this.teams.updateTeam(id, nom, ecole, nb, coach, telephone, email);
+    return await this.teams.updateTeam(
+      id,
+      nom,
+      ecole,
+      nb,
+      coach,
+      telephone,
+      email
+    );
   }
 
   async removeTeam(id) {
@@ -165,8 +172,6 @@ class MyPostgres {
   /**
    * TEAMS:END
    */
-
-
 
   /**
    * EVENT-TEAMS:BEGIN
@@ -188,11 +193,23 @@ class MyPostgres {
   }
 
   async updateTeamStatus(idEvent, idTeam, estInscrit, aPaye, status_depot) {
-    return await this.eTeams.updateTeamStatus(idEvent, idTeam, estInscrit, aPaye, status_depot);
+    return await this.eTeams.updateTeamStatus(
+      idEvent,
+      idTeam,
+      estInscrit,
+      aPaye,
+      status_depot
+    );
   }
 
   async updateTeamScore(idEvent, idTeam, win, lose, penalites) {
-    return await this.eTeams.updateTeamScore(idEvent, idTeam, win, lose, penalites);
+    return await this.eTeams.updateTeamScore(
+      idEvent,
+      idTeam,
+      win,
+      lose,
+      penalites
+    );
   }
 
   async removeTeamFromEvent(idEvent, idTeam) {
@@ -202,9 +219,7 @@ class MyPostgres {
    * EVENT-TEAMS:END
    */
 
-
-
-  /** 
+  /**
    * MATCHS:BEGIN
    */
   async getAllEventMatchs(idEvent) {
@@ -220,7 +235,14 @@ class MyPostgres {
   }
 
   async addMatchToEvent(idMatch, idEvent, idTeamA, idTeamB, terrain, date) {
-    return await this.matchs.addMatchToEvent(idMatch, idEvent, idTeamA, idTeamB, terrain, date);
+    return await this.matchs.addMatchToEvent(
+      idMatch,
+      idEvent,
+      idTeamA,
+      idTeamB,
+      terrain,
+      date
+    );
   }
 
   async updateEventMatchInfo(idMatch, terrain, date) {
@@ -228,8 +250,20 @@ class MyPostgres {
   }
 
   // refered in ../index.js as /compileMatchScore/...
-  async updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB) {
-    return await this.matchs.updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB);
+  async updateEventMatchScore(
+    idMatch,
+    pointsA,
+    penalitesA,
+    pointsB,
+    penalitesB
+  ) {
+    return await this.matchs.updateEventMatchScore(
+      idMatch,
+      pointsA,
+      penalitesA,
+      pointsB,
+      penalitesB
+    );
   }
 
   async removeEventMatch(idMatch) {
@@ -264,7 +298,7 @@ class MyPostgres {
   /**
    * DISPONIBILITIES:END
    */
-}
+};
 /*
-** END OF FILE
-*/
+ ** END OF FILE
+ */
