@@ -596,7 +596,7 @@ app.get('/getEventHourlyAvailability/:idEvent/:date', async (req,res) => {
       }
     }
   });
-  console.log(T.occupe[12]);//Enter the Hour you want
+  //console.log(T.occupe[12]);//Enter the Hour you want
   var code        = 202;
   if (pgRes != null) {
     code          = 406; // Not Acceptable
