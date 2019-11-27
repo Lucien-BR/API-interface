@@ -1,7 +1,7 @@
 {
     "Methods": "/",
     "Default_Methods": "/methods :: {...}",
-    "Info": "Voici notre API, version 1-25b, 7 days left",
+    "Info": "Voici notre API, version 1-25d, 6 days left",
     "Routes": "/gateways/<parameters>",
     "err_res": "res=code http. err == null OU err == 0. Si il y a une erreur (donc res = 400ish) err == stack tracer.",
     "Tables": {
@@ -92,7 +92,14 @@
         "Disponibilities": {
             "GET": {
                 "Obtenir_Benevoles_A_L'Horaire": "/getAllScheduled/<idEvent> :: RETOURNE TOUTE LA TABLE POUR L'INSTANT, A DEFINIR...",
-                "Obtenir_Benevoles_Disponible_Pour_Event": "/getAllAvailableForEvent/<idEvent> :: [{ allAvailable: {...} }]"
+                "Obtenir_Benevoles_Disponible_Pour_Event": "/getAllAvailableForEvent/<idEvent> :: [{ allAvailable: {...} }]",
+                "Obtenir_Dispos_&_Occupe_Event_Par_Heures": "/getEventHourlyAvailability/<idEvent>/<date> :: retour de format JSON",
+                "JSON": {
+                    "hourlyAvailability": {
+                        "dispo":["array de 24 periode de 1h. chaque periode contient une liste de email de benevoles disponible"],
+                        "occupe":["meme chose que le precedent (dispo) mais pour les non dispos car ils ont ete place a une tache"]
+                    }
+                }
             },
             "POST": {
                 "Ajouter_Plusieurs_Dispos": {

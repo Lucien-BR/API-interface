@@ -581,11 +581,27 @@ app.get('/getEventHourlyAvailability/:idEvent/:date', async (req,res) => {
   var idEvent     = req.params.idEvent;
   var date        = req.params.date;
   let pgRes       = await MyPG.getEventHourlyAvailability(idEvent, date);
+  let T = {dispo: [], occupe: []};
+  for(var i = 0; i < 24; i++){
+    T.dispo.push([]);
+    T.occupe.push([])
+  }
+  pgRes.forEach(obj => {
+    for(var j = 0;j<24; j++){
+      if(obj.grid[j]==1){
+        T.dispo[j].push(obj.email);
+      }
+      if(obj.grid[j]==2){
+        T.occupe[j].push(obj.email);
+      }
+    }
+  });
+  console.log(T.occupe[12]);//Enter the Hour you want
   var code        = 202;
   if (pgRes != null) {
     code          = 406; // Not Acceptable
-  } 
-  res.status(code).json([{ allAvailibilities: pgRes }]);
+  }
+  res.status(code).json([{ hourlyAvailability: T }]);
 });
 
 app.post("/addDispos/:idEvent/:email/:jon", async (req, res) => {
