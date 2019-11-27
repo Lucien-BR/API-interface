@@ -31,6 +31,7 @@ module.exports = class Users {
         console.log(err.stack);
       });
     client.release();
+    console.log(temp);
     return temp;
   }
 

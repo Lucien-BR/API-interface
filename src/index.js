@@ -55,27 +55,27 @@ app.get("/methods", (req, res) => {
 app.get("/users", async (req, res) => {
   let pgRes       = await MyPG.getAllUsers();
   var code        = 200; // OK
-  res.status(code).json([{ users: pgRes.rows }]);
+  res.status(code).json([{ users: pgRes }]);
 });
 
 app.get("/benevoles", async (req, res) => {
   let pgRes       = await MyPG.getAllBenevoles();
   var code        = 200; // OK
-  res.status(code).json([{ benevoles: pgRes.rows }]);
+  res.status(code).json([{ benevoles: pgRes }]);
 });
 
 app.get("/getOneUser/:email", async (req, res) => {
   var email       = req.params.email;
   let pgRes       = await MyPG.getOneUser(email);
   var code        = 200; // OK
-  res.status(code).json([{ user: pgRes.rows }]);
+  res.status(code).json([{ user: pgRes }]);
 });
 
 app.get("/getOneBenevole/:email", async (req, res) => {
   var email       = req.params.email;
   let pgRes       = await MyPG.getOneBenevole(email);
   var code        = 200; // OK
-  res.status(code).json([{ benevole: pgRes.rows }]);
+  res.status(code).json([{ benevole: pgRes }]);
 });
 
 // TODO: DANS LE BACKEND, FAIRE EN SORTE QU'A L'AJOUT D'UN USER,
@@ -198,7 +198,7 @@ app.get("/gimmeQR/:email", async (req, res) => {
   var R1          = req.params.R1;
   let pgRes       = await MyPG.gimmeQR(email, R1);
   var code        = 200; // OK
-  res.status(code).json(pgRes.rows);
+  res.status(code).json(pgRes);
 });
 /*
  ** AUTHENTIFICATION:END
