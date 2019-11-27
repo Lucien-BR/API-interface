@@ -288,6 +288,10 @@ module.exports = class MyPostgres {
     return await this.dispos.getAllAvailableForEvent(idEvent);
   }
 
+  async getEventHourlyAvailability(idEvent, date) {
+    return await this.dispos.getEventHourlyAvailability(idEvent, date);
+  }
+
   async addDispos(idEvent, email, date, hDebut, grid) {
     return await this.dispos.addDispos(idEvent, email, date, hDebut, grid);
   }

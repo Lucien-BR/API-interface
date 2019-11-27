@@ -32,6 +32,23 @@ module.exports = class Dispos {
     return temp;
   }
 
+  async getEventHourlyAvailability(idEvent, date) {
+    var temp = null;
+    const client = await this.pool.connect();
+    const queryText =
+      "SELECT * FROM disponibilities WHERE idEvent = $1 AND 1 = ANY (grid) AND date = $2;"; // CA MARCHE FINALY!
+    const queryValues = [idEvent, date];
+    await client
+      .query(queryText, queryValues)
+      .then(result => (temp = result.rows))
+      .catch(e => {
+        temp = err.stack;
+        console.error(e.stack);
+      });
+    client.release();
+    return temp;
+  }
+
   async getAllAvailableForEvent(idEvent) {
     var temp = null;
     const client = await this.pool.connect();
