@@ -55,31 +55,27 @@ app.get('/methods', (req,res) => {
 app.get("/users", async (req,res) => {
     let pgRes       = await MyPG.getAllUsers();
     var code        = 200; // OK
-    if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json([{ users: pgRes[1].rows }]);
+    res.status(code).json([{ users: pgRes.rows }]);
 });
 
 app.get("/benevoles", async (req,res) => {
     let pgRes       = await MyPG.getAllBenevoles();
     var code        = 200; // OK
-    if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json([{ benevoles: pgRes[1].rows }]);
+    res.status(code).json([{ benevoles: pgRes.rows }]);
 });
 
 app.get('/getOneUser/:email', async (req,res) => {
     var email       = req.params.email;
     let pgRes       = await MyPG.getOneUser(email);
     var code        = 200; // OK
-    if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json([{ user: pgRes[1].rows }]);
+    res.status(code).json([{ user: pgRes.rows }]);
 });
 
 app.get('/getOneBenevole/:email', async (req,res) => {
     var email       = req.params.email;
     let pgRes       = await MyPG.getOneBenevole(email);
     var code        = 200; // OK
-    if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json([{ benevole: pgRes[1].rows }]);
+    res.status(code).json([{ benevole: pgRes.rows }]);
 });
 // TODO: DANS LE BACKEND, FAIRE EN SORTE QU'A L'AJOUT D'UN USER, 
 // POUR QUE CA FASSE AUTOMATIQUEMENT /loggin APRES pour lastCon et l'adress IPv6
@@ -98,8 +94,8 @@ app.post('/addUser/:email/:nom/:prenom/:telephone/:status/:psw/:Q1/:R1', async (
     console.timeEnd("Slept for"); // show time
     let pgRes2      = await MyPG.addCred(email, psw, status, Q1, R1);
     var code        = 201; // Created
-    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes2[1]);
+    if (pgRes != null && pgRes2 != null) { code = 406; } // Not Acceptable
+    res.status(code).end([{ res: code, err: pgRes+pgRes2 }]);
 });
 
 // NEVER modify the email. This api won't allow it.
@@ -110,8 +106,8 @@ app.post('/updateUser/:email/:nom/:prenom/:telephone', async (req,res) => {
     var telephone   = req.params.telephone;
     let pgRes       = await MyPG.updateUser(email, nom, prenom, telephone);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 app.post('/updateStatus/:email/:status', async (req,res) => {
@@ -120,8 +116,8 @@ app.post('/updateStatus/:email/:status', async (req,res) => {
     let pgRes       = await MyPG.updateUserStatus(email, status);
     let pgRes2      = await MyPG.updateCredStatus(email, status);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0 && pgRes2[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes2[1]);
+    if (pgRes != null && pgRes2 != null) { code = 406; } // Not Acceptable
+    res.status(code).end([{ res: code, err: pgRes+pgRes2 }]);
 });
 
 app.post('/removeUser/:email', async (req, res) => {
@@ -138,8 +134,8 @@ app.post('/updatePsw/:email/:psw', async (req,res) => {
     var psw         = req.params.psw;
     let pgRes       = await MyPG.updateCredPsw(email, psw);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 /*
 ** USERS:END
@@ -153,16 +149,16 @@ app.get('/getDispo/:idEvent', async (req,res) => {
     var idEvent     = req.params.idEvent;
     let pgRes       = await MyPG.something(idEvent);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ dispo: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ dispo: pgRes }]);
 });
 app.post('/saveDispo/:dJon', async (req,res) => {
     var dJon        = JSON.parse(req.params.dJon);
     console.log(dJon);
     let pgRes       = "To come." + dJon; //methods to come.
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 /**
  * SCHEDULE:END
@@ -175,8 +171,8 @@ app.get('/autoLogin/:ip', async (req,res) => {
     var ip          = req.params.ip;
     let pgRes       = await MyPG.autoLogin(ip);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ autoLoginStatus: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ autoLoginStatus: pgRes }]);
 });
 
 app.get('/login/:email/:psw/:ip', async (req,res) => {
@@ -185,8 +181,8 @@ app.get('/login/:email/:psw/:ip', async (req,res) => {
     var ip          = req.params.ip;
     let pgRes       = await MyPG.login(email, psw, ip);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ loginStatus: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ loginStatus: pgRes }]);
 });
 
 app.get('/login2/:email/:psw', async (req,res) => {
@@ -194,8 +190,8 @@ app.get('/login2/:email/:psw', async (req,res) => {
     var psw         = req.params.psw;
     let pgRes       = await MyPG.login2(email, psw);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ loginStatus: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ loginStatus: pgRes }]);
 });
 
 app.get('/gimmeQR/:email', async (req,res) => {
@@ -203,8 +199,7 @@ app.get('/gimmeQR/:email', async (req,res) => {
     var R1          = req.params.R1;
     let pgRes       = await MyPG.gimmeQR(email, R1);
     var code        = 200; // OK
-    if (pgRes[0] != 0) { code = 400; } // Bad Request
-    res.status(code).json([{ questionReponse: pgRes[1].rows }]);
+    res.status(code).json(pgRes.rows);
 });
 /*
 ** AUTHENTIFICATION:END
@@ -218,16 +213,16 @@ app.get('/gimmeQR/:email', async (req,res) => {
 app.get('/events', async (req,res) => {
     let pgRes       = await MyPG.getAllEvents();
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ events: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ events: pgRes }]);
 });
 
 app.get('/getOneEvent/:id', async (req,res) => {
     var id          = req.params.id;
     let pgRes       = await MyPG.getOneEvent(id);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ event: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ event: pgRes }]);
 });
 
 app.post('/addEvent/:id/:nom/:lieu/:nb/:debut/:fin', async (req,res) => {
@@ -239,8 +234,8 @@ app.post('/addEvent/:id/:nom/:lieu/:nb/:debut/:fin', async (req,res) => {
     var fin         = req.params.fin;
     let pgRes       = await MyPG.addEvent(id, nom, lieu, nb, debut, fin);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 app.post('/updateEvent/:id/:nom/:lieu/:nb/:debut/:fin', async (req,res) => {
@@ -252,16 +247,16 @@ app.post('/updateEvent/:id/:nom/:lieu/:nb/:debut/:fin', async (req,res) => {
     var fin         = req.params.fin;
     let pgRes       = await MyPG.updateEvent(id, nom, lieu, nb, debut, fin);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 app.post('/removeEvent/:id', async (req,res) => {
     var id          = req.params.id;
     let pgRes       = await MyPG.removeEvent(id);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 /*
 ** EVENTS:END
@@ -275,16 +270,16 @@ app.post('/removeEvent/:id', async (req,res) => {
 app.get('/teams', async (req,res) => {
     let pgRes       = await MyPG.getAllTeams();
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ teams: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ teams: pgRes }]);
 });
 
 app.get('/getOneTeam/:id', async (req,res) => {
     var id          = req.params.id;
     let pgRes       = await MyPG.getOneTeam(id);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ team: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ team: pgRes }]);
 });
 
 app.post('/addTeam/:id/:nom/:ecole/:nb/:coach/:cell/:email', async (req,res) => {
@@ -297,8 +292,8 @@ app.post('/addTeam/:id/:nom/:ecole/:nb/:coach/:cell/:email', async (req,res) => 
     var email       = req.params.email;
     let pgRes       = await MyPG.addTeam(id, nom, ecole, nb, coach, cell, email);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 app.post('/updateTeam/:id/:nom/:ecole/:nb/:coach/:cell/:email', async (req,res) => {
@@ -311,16 +306,16 @@ app.post('/updateTeam/:id/:nom/:ecole/:nb/:coach/:cell/:email', async (req,res) 
     var email       = req.params.email;
     let pgRes       = await MyPG.updateTeam(id, nom, ecole, nb, coach, cell, email);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 app.post('/removeTeam/:id', async (req,res) => {
     var id          = req.params.id;
     let pgRes       = await MyPG.removeTeam(id);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 /**
  * TEAMS:END
@@ -335,16 +330,16 @@ app.get('/getAllEventTeams/:idEvent', async (req,res) => {
     var idEvent     = req.params.idEvent;
     let pgRes       = await MyPG.getAllEventTeams(idEvent);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ event_teams: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ event_teams: pgRes }]);
 });
 
 app.get('/getEventLeaderboard/:idEvent', async (req,res) => {
     var idEvent     = req.params.idEvent;
     let pgRes       = await MyPG.getEventLeaderboard(idEvent);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ leaderboard: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ leaderboard: pgRes }]);
 });
 
 app.post('/addTeamToEvent/:idEvent/:idTeam', async (req,res) => {
@@ -352,8 +347,8 @@ app.post('/addTeamToEvent/:idEvent/:idTeam', async (req,res) => {
     var idTeam      = req.params.idTeam;
     let pgRes       = await MyPG.addTeamToEvent(idEvent, idTeam);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 app.post('/updateTeamStatus/:idEvent/:idTeam/:estInscrit/:aPaye/:statusDepot', async (req,res) => {
@@ -364,8 +359,8 @@ app.post('/updateTeamStatus/:idEvent/:idTeam/:estInscrit/:aPaye/:statusDepot', a
     var statusDepot = req.params.statusDepot;
     let pgRes       = await MyPG.updateTeamStatus(idEvent, idTeam, estInscrit, aPaye, statusDepot);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 /* IS ACOMPLISHED THROUGH /compileMatchScore
@@ -377,8 +372,8 @@ app.post('/updateTeamScore/:idEvent/:idTeam/:win/:lose/:penalites', async (req,r
     var penalites   = req.params.penalites;
     let pgRes       = await MyPG.updateTeamScore(idEvent, idTeam, win, lose, penalites);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 */
 
@@ -387,8 +382,8 @@ app.post('/removeTeamFromEvent/:idEvent/:idTeam', async (req, res) => {
     var idTeam      = req.params.idTeam;
     let pgRes       = await MyPG.removeTeamFromEvent(idEvent, idTeam);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 /**
  * EVENT-TEAMS:END
@@ -403,16 +398,16 @@ app.get('/getAllEventMatchs/:idEvent', async (req,res) => {
     var idEvent     = req.params.idEvent;
     let pgRes       = await MyPG.getAllEventMatchs(idEvent);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ eventMatchs: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ eventMatchs: pgRes }]);
 });
 
 app.get('/getOneMatch/:idMatch', async (req,res) => {
     var idMatch     = req.params.idMatch;
     let pgRes       = await MyPG.getOneMatch(idMatch);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ match: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ match: pgRes }]);
 });
 
 app.get('/getOneTeamEventMatchs/:idEvent/:idMatch', async (req,res) => {
@@ -420,8 +415,8 @@ app.get('/getOneTeamEventMatchs/:idEvent/:idMatch', async (req,res) => {
     var idMatch     = req.params.idMatch;
     let pgRes       = await MyPG.getOneTeamEventMatchs(idEvent, idMatch);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ teamMatchs: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ teamMatchs: pgRes }]);
 });
 
 app.post('/addMatchToEvent/:idMatch/:idEvent/:idTeamA/:idTeamB/:terrain/:date', async (req,res) => {
@@ -433,8 +428,8 @@ app.post('/addMatchToEvent/:idMatch/:idEvent/:idTeamA/:idTeamB/:terrain/:date', 
     var date        = req.params.date;
     let pgRes       = await MyPG.addMatchToEvent(idMatch, idEvent, idTeamA, idTeamB, terrain, date);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 app.post('/updateEventMatchInfo/:idMatch/:terrain/:date', async (req,res) => {
@@ -443,8 +438,8 @@ app.post('/updateEventMatchInfo/:idMatch/:terrain/:date', async (req,res) => {
     var date        = req.params.date;
     let pgRes       = await MyPG.updateEventMatchInfo(idMatch, terrain, date);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 /**
@@ -500,16 +495,16 @@ app.post('/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB'
     // End of update process 
 
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]); // status of the only one we can revert..
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]); // status of the only one we can revert..
 });
 
 app.post('/removeEventMatch/:idMatch', async (req,res) => {
     var idMatch     = req.params.idMatch;
     let pgRes       = await MyPG.removeEventMatch(idMatch);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 /**
  * MATCHS:END
@@ -524,54 +519,59 @@ app.get('/getAllScheduled/:idEvent', async (req,res) => {
     var idEvent     = req.params.idEvent;
     let pgRes       = await MyPG.getAllScheduled(idEvent);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ allScheduled: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ allScheduled: pgRes }]);
 });
 
 app.get('/getAllAvailableForEvent/:idEvent', async (req,res) =>{
     var idEvent     = req.params.idEvent;
     let pgRes       = await MyPG.getAllAvailableForEvent(idEvent);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).json([{ allAvailable: pgRes[1] }]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ allAvailable: pgRes }]);
 });
 
 /**
  * WHERE jon is of structure:
  * [
  *      {
- *          "date":"DATE",
- *          "hDebut":"TIME",
- *          "nbHeure":"INT"
+ *          "date": "DATE",
+ *          "hDebut": "TIME",
+ *          "grid": [0,0,0,0,0,0,  0,0,0,0,0,0,  0,0,0,0,0,0,  0,0,0,0,0,0,]
  *      },
  *      {
- *          "date":"DATE",
- *          "hDebut":"TIME",
- *          "nbHeure":"INT"
+ *          "date": "DATE",
+ *          "hDebut": "TIME",
+ *          "grid": [0,0,0,0,0,0,  0,0,0,0,0,0,  0,0,0,0,0,0,  0,0,0,0,0,0,]
  *      },
  *      {...}
  * ]
  */
 app.post('/addDispos/:idEvent/:email/:jon', async (req,res) => {
-    //var jon         = JSON.parse(req.params.jon); // can't test on my own
-
-    var jon = [{"date":"2019-11-18","hDebut":"12:00:00","nbHeures":10},
-           {"date":"2019-11-19","hDebut":"08:00:00","nbHeures":6}]; // TODO: REMOVE THIS AFTERWARDS    
+    var JHON        = req.params.jon;
     var idEvent     = req.params.idEvent;
     var email       = req.params.email;
+    if (JHON == 'hehe'){// hehe for debugging, anything else for using the DB at good ends
+        JHON        = [{"date":"2019-11-18","hDebut":"11:00:00","grid":[0,0,0,0,0,0,  0,0,0,0,0,1,  1,1,1,1,1,1,  1,1,0,0,0,0]},
+                       {"date":"2019-11-19","hDebut":"08:00:00","grid":[0,0,0,0,0,0,  0,0,1,1,1,1,  1,1,1,1,1,1,  0,0,0,0,0,0]}];
+        JHON        = JSON.stringify(JHON);
+    }
+    var jon         = JSON.parse(JHON); // can't test on my own
     var code        = 202; // Accepted
     let pgRes;
-    for(var i=0;i<jon.length;i++) {
-        var date = jon[i].date;
-        var hDebut = jon[i].hDebut;
-        var hTemp = parseInt(hDebut.charAt(0).concat(hDebut.charAt(1))); // to get hours in hDebut
-        var nbHeures = jon[i].nbHeures;
-        var grid = [0,0,0,0,0,0,  0,0,0,0,0,0,  0,0,0,0,0,0,  0,0,0,0,0,0]; //0 non dispo, 1 dispo 2 occupe
-        for (var j=0;j<nbHeures;j++) { grid[hTemp+j] = 1; } // flip les dispos dans grid
-        pgRes       = await MyPG.addDispos(idEvent, email, date, hDebut, nbHeures, grid);
-        if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    }
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    try {
+        for (var i = 0;i<jon.length;i++) {
+            var date    = jon[i].date;
+            var hDebut  = jon[i].hDebut;
+            var grid    = jon[i].grid;
+            pgRes       = await MyPG.addDispos(idEvent, email, date, hDebut, grid);
+            if (pgRes != null) {
+                code = 406; // Not Acceptable
+                throw pgRes; // stack Tracer
+                } 
+        }
+    }catch(e) {}
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 
 app.post('/removeDispo/:idEvent/:email/:date', async (req,res) => {
@@ -580,8 +580,8 @@ app.post('/removeDispo/:idEvent/:email/:date', async (req,res) => {
     var date        = req.params.date;
     let pgRes       = await MyPG.removeDispo(idEvent, email, date);
     var code        = 202; // Accepted
-    if (pgRes[0] != 0) { code = 406; } // Not Acceptable
-    res.status(code).end("res: "+code+" err: "+pgRes[1]);
+    if (pgRes != null) { code = 406; } // Not Acceptable
+    res.status(code).json([{ res: code, err: pgRes }]);
 });
 /**
  * DISPONIBILITIES:END

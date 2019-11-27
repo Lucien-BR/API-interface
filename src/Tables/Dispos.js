@@ -17,40 +17,44 @@ class Dispos {
     }
 
     async getAllScheduled(idEvent) {
-        var code = 0, temp;
+        var temp = null;
         const client = await this.pool.connect();
         const queryText = 'SELECT * FROM Disponibilities WHERE idEvent = $1';
         const queryValues = [idEvent];
         await client
-          .query(queryText, queryValues)
-          .then(result => temp = result.rows)
-          .catch(e => {console.error(e.stack); code = 1;});
+            .query(queryText, queryValues)
+            .then(res => {temp = res.rows;})
+            .catch(err => {temp = err.stack; console.log(err.stack);});
         client.release();
-        return  [code, temp];
+        return temp;
     }
 
     async getAllAvailableForEvent(idEvent) {
-        var code = 0, temp;
+        var temp = null;
         const client = await this.pool.connect();
         const queryText = 'SELECT * FROM disponibilities WHERE idEvent = $1 AND 1 = ANY (grid);'; // CA MARCHE FINALY!
         const queryValues = [idEvent];
-        await client
-          .query(queryText, queryValues)
+        await client.query(queryText, queryValues)
           .then(result => temp = result.rows)
-          .catch(e => {console.error(e.stack); code = 1;});
+          .catch(e => {temp = err.stack; console.error(e.stack);});
         client.release();
-        return  [code, temp];
+        return temp;
     }
 
-    async addDispos(idEvent, email, date, hDebut, nbHeures, grid) {
-            var er = null, code = 0;
-            ;(async () => {
+    async addDispos(idEvent, email, date, hDebut, grid) {
+            var er = null;
+            let myErr = await (async () => {
                 const client = await this.pool.connect();
                 try {
                     await client.query('BEGIN');
-                    const queryText = 'INSERT INTO Disponibilities(idEvent, email, date, hDebut, nbHeures, grid) VALUES($1, $2, $3, $4, $5, $6)';
-                    const queryValues = [idEvent, email, date, hDebut, nbHeures, grid];
-                    await client.query(queryText, queryValues);
+                    const queryText = 'INSERT INTO Disponibilities(idEvent, email, date, hDebut, grid) VALUES($1, $2, $3, $4, $5)';
+                    const queryValues = [idEvent, email, date, hDebut, grid];
+                    await client.query(queryText, queryValues, (err,res) => {
+                        if (err != null){
+                            console.log(err);
+                            er = err.detail;
+                        }
+                    });
                     await client.query('COMMIT');
                 } catch (e) {
                     code = 1;
@@ -59,28 +63,35 @@ class Dispos {
                 } finally {
                     client.release();
                 }
-            })().catch(e => {console.error(e.stack); er = e});
-        return [code, er];
+                return er;
+            })().catch();
+        return myErr;
     }
 
     async removeDispo(idEvent, email, date) {
-        var er = null, code = 0;
-        ;(async () => {
+        var er = null;
+        let myErr = await (async () => {
             const client = await this.pool.connect();
             try {
                 await client.query('BEGIN');
                 const queryText = 'DELETE FROM Disponibilities WHERE idEvent = $1 AND email = $2 AND date = $3';
                 const queryValues = [idEvent, email, date];
-                await client.query(queryText, queryValues);
-                await client.query('COMMIT');
-            } catch (e) {
-                code = 1;
-                await client.query('ROLLBACK');
-                throw e;
-            } finally {
-                client.release();
-            }
-        })().catch(e => {console.error(e.stack); er = e});
-    return [code, er];
+                    await client.query(queryText, queryValues, (err,res) => {
+                        if (err != null){
+                            console.log(err);
+                            er = err.detail;
+                        }
+                    });
+                    await client.query('COMMIT');
+                } catch (e) {
+                    code = 1;
+                    await client.query('ROLLBACK');
+                    throw e;
+                } finally {
+                    client.release();
+                }
+                return er;
+            })().catch();
+        return myErr;
     }
 }

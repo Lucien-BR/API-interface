@@ -254,8 +254,8 @@ class MyPostgres {
     return await this.dispos.getAllAvailableForEvent(idEvent);
   }
 
-  async addDispos(idEvent, email, date, hDebut, nbHeures, grid) {
-    return await this.dispos.addDispos(idEvent, email, date, hDebut, nbHeures, grid);
+  async addDispos(idEvent, email, date, hDebut, grid) {
+    return await this.dispos.addDispos(idEvent, email, date, hDebut, grid);
   }
 
   async removeDispo(idEvent, email, date) {
