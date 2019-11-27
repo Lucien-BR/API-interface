@@ -164,7 +164,7 @@ app.get("/autoLogin/:ip", async (req, res) => {
   var ip          = req.params.ip;
   let pgRes       = await MyPG.autoLogin(ip);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ autoLoginStatus: pgRes }]);
@@ -176,7 +176,7 @@ app.get("/login/:email/:psw/:ip", async (req, res) => {
   var ip          = req.params.ip;
   let pgRes       = await MyPG.login(email, psw, ip);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ loginStatus: pgRes }]);
@@ -187,10 +187,10 @@ app.get("/login2/:email/:psw", async (req, res) => {
   var psw         = req.params.psw;
   let pgRes       = await MyPG.login2(email, psw);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
-  res.status(code).json([{ loginStatus: pgRes }]);
+  res.status(code).json([{ loginStatus: pgRes, status: code }]);
 });
 
 app.get("/gimmeQR/:email", async (req, res) => {
@@ -210,7 +210,7 @@ app.get("/gimmeQR/:email", async (req, res) => {
 app.get("/events", async (req, res) => {
   let pgRes       = await MyPG.getAllEvents();
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ events: pgRes }]);
@@ -220,7 +220,7 @@ app.get("/getOneEvent/:id", async (req, res) => {
   var id          = req.params.id;
   let pgRes       = await MyPG.getOneEvent(id);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ event: pgRes }]);
@@ -275,7 +275,7 @@ app.post("/removeEvent/:id", async (req, res) => {
 app.get("/teams", async (req, res) => {
   let pgRes       = await MyPG.getAllTeams();
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ teams: pgRes }]);
@@ -285,7 +285,7 @@ app.get("/getOneTeam/:id", async (req, res) => {
   var id          = req.params.id;
   let pgRes       = await MyPG.getOneTeam(id);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ team: pgRes }]);
@@ -349,7 +349,7 @@ app.get("/getAllEventTeams/:idEvent", async (req, res) => {
   var idEvent     = req.params.idEvent;
   let pgRes       = await MyPG.getAllEventTeams(idEvent);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ event_teams: pgRes }]);
@@ -359,7 +359,7 @@ app.get("/getEventLeaderboard/:idEvent", async (req, res) => {
   var idEvent     = req.params.idEvent;
   let pgRes       = await MyPG.getEventLeaderboard(idEvent);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ leaderboard: pgRes }]);
@@ -416,7 +416,7 @@ app.get("/getAllEventMatchs/:idEvent", async (req, res) => {
   var idEvent     = req.params.idEvent;
   let pgRes       = await MyPG.getAllEventMatchs(idEvent);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ eventMatchs: pgRes }]);
@@ -426,7 +426,7 @@ app.get("/getOneMatch/:idMatch", async (req, res) => {
   var idMatch     = req.params.idMatch;
   let pgRes       = await MyPG.getOneMatch(idMatch);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ match: pgRes }]);
@@ -437,7 +437,7 @@ app.get("/getOneTeamEventMatchs/:idEvent/:idMatch", async (req, res) => {
   var idMatch     = req.params.idMatch;
   let pgRes       = await MyPG.getOneTeamEventMatchs(idEvent, idMatch);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ teamMatchs: pgRes }]);
@@ -549,6 +549,8 @@ app.post("/removeEventMatch/:idMatch", async (req, res) => {
  * MATCHS:END
  */
 
+
+
 /**
  * DISPONIBILITIES:BEGIN
  */
@@ -556,7 +558,7 @@ app.get("/getAllScheduled/:idEvent", async (req, res) => {
   var idEvent     = req.params.idEvent;
   let pgRes       = await MyPG.getAllScheduled(idEvent);
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ allScheduled: pgRes }]);
@@ -566,12 +568,8 @@ app.get("/getAllAvailableForEvent/:idEvent", async (req, res) => {
   var idEvent     = req.params.idEvent;
   let pgRes       = await MyPG.getAllAvailableForEvent(idEvent);
   console.log(pgRes);
-
-
-
-
   var code        = 202; // Accepted
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   } 
   res.status(code).json([{ allAvailable: pgRes }]);
@@ -598,7 +596,7 @@ app.get('/getEventHourlyAvailability/:idEvent/:date', async (req,res) => {
   });
   //console.log(T.occupe[12]);//Enter the Hour you want
   var code        = 202;
-  if (pgRes != null) {
+  if (pgRes == null) {
     code          = 406; // Not Acceptable
   }
   res.status(code).json([{ hourlyAvailability: T }]);
@@ -656,6 +654,8 @@ app.post("/removeDispo/:idEvent/:email/:date", async (req, res) => {
 /**
  * DISPONIBILITIES:END
  */
+
+
 
 /*
  ** CRITICALS:BEGIN
