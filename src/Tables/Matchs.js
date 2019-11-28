@@ -131,15 +131,15 @@ module.exports = class Matchs {
   }
 
   // Mettre a jour SCORE un match pour un event IMPORTANT
-  async updateEventMatchScore(idMatch,pointsA,penalitesA,pointsB,penalitesB) {
+  async updateEventMatchScore(idMatch,pointsA,penalitesA,pointsB,penalitesB, overtime) {
     var er = null;
     let myErr = await (async () => {
       const client = await this.pool.connect();
       try {
         await client.query("BEGIN");
         const queryText =
-          "UPDATE Matchs SET pointsA = $2, penalitesA = $3, pointsB = $4, penalitesB = $5, wasUpdated = 1 WHERE idMatch = $1";
-        const queryValues = [idMatch, pointsA, penalitesA, pointsB, penalitesB];
+          "UPDATE Matchs SET pointsA = $2, penalitesA = $3, pointsB = $4, penalitesB = $5, overtime = $6, wasUpdated = TRUE WHERE idMatch = $1";
+        const queryValues = [idMatch, pointsA, penalitesA, pointsB, penalitesB, overtime];
         await client.query(queryText, queryValues, (err, res) => {
           if (err != null) {
             console.log(err);

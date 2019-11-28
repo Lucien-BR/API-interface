@@ -1,7 +1,7 @@
 {
     "Methods": "/",
     "Default_Methods": "/methods :: {...}",
-    "Info": "Voici notre API, version 1-26a, November 28th 2019",
+    "Info": "Voici notre API, version 1-26b, November 28th 2019",
     "Routes": "/gateways/<parameters>",
     "err_res": "res=code http. err == null OU err == 0. Si il y a une erreur (donc res = 400ish) err == stack tracer.",
     "Tables": {

@@ -486,24 +486,24 @@ app.post("/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB/
     var pointsB   = req.params.pointsB;
     var penalitesB= req.params.penalitesB;
     var overtime  = req.params.overtime;
-    let pgRes     = await MyPG.updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB); 
+    let pgRes     = await MyPG.updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB, overtime); 
     // this is the firs update refered in a comment
     if (specialRes[1] != true) {
       // Begin of update process of EventTeam Table (score)
       let pgRes2  = await MyPG.getOneMatch(idMatch);
-      let res2 = pgRes2[1][0];
+      let res2 = pgRes2[0];
       var idTeamA = res2.idteama;
       var idTeamB = res2.idteamb;
       var idEvent = res2.idevent;
       let pgRes3A = await MyPG.getOneEventTeam(idEvent, idTeamA); // get previous score for increment
-      let res3A   = pgRes3A[1][0];
+      let res3A   = pgRes3A[0];
       var winA    = res3A.win;
       var loseA   = res3A.lose;
       var penA    = res3A.penalites + penalitesA; // increment
       var ppA     = res3A.ptsPour + pointsA;
       var pcA     = res3A.ptsContre + pointsB;
       let pgRes3B = await MyPG.getOneEventTeam(idEvent, idTeamB);
-      let res3B   = pgRes3B[1][0];
+      let res3B   = pgRes3B[0];
       var winB    = res3B.win;
       var loseB   = res3B.lose;
       var penB    = res3B.penalites + penalitesB;

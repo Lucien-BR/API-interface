@@ -231,8 +231,8 @@ module.exports = class MyPostgres {
   }
 
   // refered in ../index.js as /compileMatchScore/...
-  async updateEventMatchScore(idMatch,pointsA,penalitesA,pointsB,penalitesB) {
-    return await this.matchs.updateEventMatchScore(idMatch,pointsA,penalitesA,pointsB,penalitesB);
+  async updateEventMatchScore(idMatch,pointsA,penalitesA,pointsB,penalitesB, overtime) {
+    return await this.matchs.updateEventMatchScore(idMatch,pointsA,penalitesA,pointsB,penalitesB, overtime);
   }
 
   async removeEventMatch(idMatch) {
