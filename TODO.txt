@@ -5,7 +5,10 @@ X- faire des retours appropries (email unknown, wrong password, etc)
 X- Metre a jour le default gateway ('/')
 X- Ajouter les retours
 X- Refaire les lignes de retours dans MyPostgres.js
- - Faire une fonction de refresh lastCon et l'appeller dans toutes les get/post
+X- Faire une fonction de refresh lastCon et l'appeller dans toutes les get/post
  - Securiser l'API avec helmet et sync
- - Faire en sorte que le default '/' retourne du beautify json (avec couleur) et '/.' regular json
- - ma fonction de refresh IP vs la connection de genre 1h de google, how tf...
+X- Faire en sorte que le default '/' retourne du beautify json (avec couleur) et '/.' regular json
+X- ma fonction de refresh IP vs la connection de genre 1h de google, how tf...
+ - Modifier le doc json pour que /benevoles apparaisse
+ - Faire en sortes que les methodes de benevoles incluent les admins!!!
+ - Corriger l'erreur de retour avec /login2 et dans l'API, et dans le modele du tp-interfaces...
