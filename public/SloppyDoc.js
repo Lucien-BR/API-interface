@@ -22,7 +22,7 @@ var jon =
         },
         "Benevoles": {
             "GET": {
-                "Obtenir_Tout": "/users :: [{ benevoles: {...} }]",
+                "Obtenir_Tout": "/benevoles :: [{ benevoles: {...} }]",
                 "Obtenir_Tout_Demande": "/getBenevoleDemandes :: [{ demandes: {...} }]"
             },
             "POST": {

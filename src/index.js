@@ -79,9 +79,7 @@ app.get("/getBenevoleDemandes", async (req, res) => {
 
 // TODO: DANS LE BACKEND, FAIRE EN SORTE QU'A L'AJOUT D'UN USER,
 // POUR QUE CA FASSE AUTOMATIQUEMENT /loggin APRES pour lastCon et l'adress IPv6
-app.post(
-  "/addUser/:email/:nom/:prenom/:telephone/:status/:psw/:Q1/:R1",
-  async (req, res) => {
+app.post("/addUser/:email/:nom/:prenom/:telephone/:status/:psw/:Q1/:R1",async (req, res) => {
     var email     = req.params.email;
     var nom       = req.params.nom;
     var prenom    = req.params.prenom;
