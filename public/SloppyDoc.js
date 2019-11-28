@@ -14,7 +14,7 @@ var jon =
             },
             "POST":{
                 "Ajouter_Un": "/addUser/<email>/<nom>/<prenom>/<telephone>/<status value in ['A'dmin, 'B'enevole, 'P'ublic, 'D'emande]>/<motDePasse>/<Question1>/<Reponse1> :: [{ res: ___ , err: ___ }]",
-                "Metre_A_Jour_Info": "/updateUser/<email>/<nom>/<prenom>/<telephone>/<status> :: [{ res: ___ , err: ___ }]", 
+                "Metre_A_Jour_Info": "/updateUser/<email>/<nom>/<prenom>/<telephone> :: [{ res: ___ , err: ___ }]", 
                 "Metre_A_Jour_Mot_De_Passe": "/updatePsw/<email>/<nouveauMotDePasse> :: [{ res: ___ , err: ___ }]",
                 "Metre_A_Jour_Status": "/updateStatus/<email>/<status> :: [{ res: ___ , err: ___ }]",
                 "Retirer_Un": "/removeUser/<email> :: [{ res: ___ , err: ___ }]"
