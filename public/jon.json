@@ -1,7 +1,7 @@
 {
     "Methods": "/",
     "Default_Methods": "/methods :: {...}",
-    "Info": "Voici notre API, version 1-25f, 6 days left",
+    "Info": "Voici notre API, version 1-26a, November 28th 2019",
     "Routes": "/gateways/<parameters>",
     "err_res": "res=code http. err == null OU err == 0. Si il y a une erreur (donc res = 400ish) err == stack tracer.",
     "Tables": {
@@ -22,7 +22,7 @@
         "Benevoles": {
             "GET": {
                 "Obtenir_Tout": "/users :: [{ benevoles: {...} }]",
-                "Obtenir_Un": "/getOneBenevole/<email> :: [{ benevole: {...} }]"
+                "Obtenir_Tout_Demande": "/getBenevoleDemandes :: [{ demandes: {...} }]"
             },
             "POST": {
                 
@@ -79,13 +79,13 @@
         "Matchs": {
             "GET": {
                 "Obtenir_Tout_Dans_Evenement": "/getAllEventMatchs/<idEvent> :: [{ eventMatchs: {...} }]",
-                "Obtenir_Tout_Sur_Une_Equipe_Pour_Evenement": "/getOneTeamEventMatchs/<idEvent>/<idMatch> :: [{ teamMatchs: {...} }]",
+                "Obtenir_Tout_Sur_Une_Equipe_Pour_Evenement": "/getOneTeamEventMatchs/<idEvent>/<idTeam> :: [{ teamMatchs: {...} }]",
                 "Obtenir_Un": "/getOneMatch/<idMatch> :: [{ match: {...} }]"
             },
             "POST": {
                 "Ajouter_Un": "/addMatchToEvent/<idMatch>/<idEvent>/<idTeamA>/<idTeamB>/<terrain>/<date> :: [{ res: ___ , err: ___ }]",
                 "Mettre_A_Jour_Info": "/updateEventMatchInfo/<idMatch>/<terrain>/<date> :: [{ res: ___ , err: ___ }]",
-                "Envoyer_Resultat_Match": "/compileMatchScore/<idMatch>/<pointsA>/<penalitesA>/<pointsB>/<penalitesB> :: [{ res: ___ , err: ___ }]",
+                "Envoyer_Resultat_Match": "/compileMatchScore/<idMatch>/<pointsA>/<penalitesA>/<pointsB>/<penalitesB>/<overtime> :: [{ res: ___ , err: ___ }]",
                 "Retirer_Un": "/removeEventMatch/<idMatch> :: [{ res: ___ , err: ___ }]"
             }
         },

@@ -71,11 +71,10 @@ app.get("/getOneUser/:email", async (req, res) => {
   res.status(code).json([{ user: pgRes }]);
 });
 
-app.get("/getOneBenevole/:email", async (req, res) => {
-  var email       = req.params.email;
-  let pgRes       = await MyPG.getOneBenevole(email);
+app.get("/getBenevoleDemandes", async (req, res) => {
+  let pgRes       = await MyPG.getBenevoleDemandes();
   var code        = 200; // OK
-  res.status(code).json([{ benevole: pgRes }]);
+  res.status(code).json([{ demandes: pgRes }]);
 });
 
 // TODO: DANS LE BACKEND, FAIRE EN SORTE QU'A L'AJOUT D'UN USER,
@@ -432,10 +431,10 @@ app.get("/getOneMatch/:idMatch", async (req, res) => {
   res.status(code).json([{ match: pgRes }]);
 });
 
-app.get("/getOneTeamEventMatchs/:idEvent/:idMatch", async (req, res) => {
+app.get("/getOneTeamEventMatchs/:idEvent/:idTeam", async (req, res) => {
   var idEvent     = req.params.idEvent;
-  var idMatch     = req.params.idMatch;
-  let pgRes       = await MyPG.getOneTeamEventMatchs(idEvent, idMatch);
+  var idTeam     = req.params.idTeam;
+  let pgRes       = await MyPG.getOneTeamEventMatchs(idEvent, idTeam);
   var code        = 202; // Accepted
   if (pgRes == null) {
     code          = 406; // Not Acceptable
@@ -480,8 +479,7 @@ app.post("/updateEventMatchInfo/:idMatch/:terrain/:date", async (req, res) => {
  * -- TESTED AND OPERATIONAL --
  * refered in Mypostgres.js and Matchs.js as updateEventMatchScore()
  */
-app.post(
-  "/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB",
+app.post("/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB/:overtime",
   async (req, res) => {
     let specialRes = await MyPG.wasEventMatchUpdated(idMatch); // double checks for previous updates
     var idMatch   = req.params.idMatch;
@@ -489,6 +487,7 @@ app.post(
     var penalitesA= req.params.penalitesA;
     var pointsB   = req.params.pointsB;
     var penalitesB= req.params.penalitesB;
+    var overtime  = req.params.overtime;
     let pgRes     = await MyPG.updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB); 
     // this is the firs update refered in a comment
     if (specialRes[1] != true) {
@@ -503,13 +502,16 @@ app.post(
       var winA    = res3A.win;
       var loseA   = res3A.lose;
       var penA    = res3A.penalites + penalitesA; // increment
+      var ppA     = res3A.ptsPour + pointsA;
+      var pcA     = res3A.ptsContre + pointsB;
       let pgRes3B = await MyPG.getOneEventTeam(idEvent, idTeamB);
       let res3B   = pgRes3B[1][0];
       var winB    = res3B.win;
       var loseB   = res3B.lose;
       var penB    = res3B.penalites + penalitesB;
+      var ppB     = res3B.ptsPour + pointsB;
+      var pcB     = res3B.ptsContre + pointsA;
       if (pointsA > pointsB) {
-        // increment
         winA++;
         loseB++;
       }
@@ -517,14 +519,8 @@ app.post(
         winB++;
         loseA++;
       }
-      /**
-       * IMPORTANT: Notice that there is no return recorded for the 2 updates.
-       * That is because im dumb af and that i have provided no way to revert the
-       * first update in case this thing goes wrong. Ill deal with this later,
-       * we have to focus on the current deadline we have for our class -.-
-       */
-      await MyPG.updateTeamScore(idEvent, idTeamA, winA, loseA, penA);
-      await MyPG.updateTeamScore(idEvent, idTeamB, winB, loseB, penB);
+      await MyPG.updateTeamScore(idEvent, idTeamA, winA, loseA, penA, ppA, pcA);
+      await MyPG.updateTeamScore(idEvent, idTeamB, winB, loseB, penB, ppB, pcB);
     }
     // End of update process
 

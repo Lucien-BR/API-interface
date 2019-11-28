@@ -6,9 +6,11 @@ X- Metre a jour le default gateway ('/')
 X- Ajouter les retours
 X- Refaire les lignes de retours dans MyPostgres.js
 X- Faire une fonction de refresh lastCon et l'appeller dans toutes les get/post
- - Securiser l'API avec helmet et sync
+X- Securiser l'API avec helmet et sync
 X- Faire en sorte que le default '/' retourne du beautify json (avec couleur) et '/.' regular json
 X- ma fonction de refresh IP vs la connection de genre 1h de google, how tf...
- - Modifier le doc json pour que /benevoles apparaisse
- - Faire en sortes que les methodes de benevoles incluent les admins!!!
+X- Modifier le doc json pour que /benevoles apparaisse
+X- Faire en sortes que les methodes de benevoles incluent les admins!!!
  - Corriger l'erreur de retour avec /login2 et dans l'API, et dans le modele du tp-interfaces...
+X- ajouter rounds gagner/perdus
+X- retapper get Leaderboard, c'est fucked, retourner le nom de l'equipe aussi

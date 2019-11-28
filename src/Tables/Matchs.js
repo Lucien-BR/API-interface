@@ -131,13 +131,7 @@ module.exports = class Matchs {
   }
 
   // Mettre a jour SCORE un match pour un event IMPORTANT
-  async updateEventMatchScore(
-    idMatch,
-    pointsA,
-    penalitesA,
-    pointsB,
-    penalitesB
-  ) {
+  async updateEventMatchScore(idMatch,pointsA,penalitesA,pointsB,penalitesB) {
     var er = null;
     let myErr = await (async () => {
       const client = await this.pool.connect();

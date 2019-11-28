@@ -42,8 +42,8 @@ module.exports = class MyPostgres {
     return await this.users.getOneUser(email);
   }
 
-  async getOneBenevole(email) {
-    return await this.users.getOneBenevole(email);
+  async getBenevoleDemandes() {
+    return await this.users.getBenevoleDemandes();
   }
 
   async addUser(email, nom, prenom, telephone, status) {
@@ -193,23 +193,11 @@ module.exports = class MyPostgres {
   }
 
   async updateTeamStatus(idEvent, idTeam, estInscrit, aPaye, status_depot) {
-    return await this.eTeams.updateTeamStatus(
-      idEvent,
-      idTeam,
-      estInscrit,
-      aPaye,
-      status_depot
-    );
+    return await this.eTeams.updateTeamStatus(idEvent, idTeam, estInscrit, aPaye, status_depot);
   }
 
-  async updateTeamScore(idEvent, idTeam, win, lose, penalites) {
-    return await this.eTeams.updateTeamScore(
-      idEvent,
-      idTeam,
-      win,
-      lose,
-      penalites
-    );
+  async updateTeamScore(idEvent, idTeam, win, lose, penalites, ptsPour, ptsContre) {
+    return await this.eTeams.updateTeamScore(idEvent, idTeam, win, lose, penalites, ptsPour, ptsContre);
   }
 
   async removeTeamFromEvent(idEvent, idTeam) {
@@ -235,14 +223,7 @@ module.exports = class MyPostgres {
   }
 
   async addMatchToEvent(idMatch, idEvent, idTeamA, idTeamB, terrain, date) {
-    return await this.matchs.addMatchToEvent(
-      idMatch,
-      idEvent,
-      idTeamA,
-      idTeamB,
-      terrain,
-      date
-    );
+    return await this.matchs.addMatchToEvent(idMatch,idEvent,idTeamA,idTeamB,terrain,date);
   }
 
   async updateEventMatchInfo(idMatch, terrain, date) {
@@ -250,20 +231,8 @@ module.exports = class MyPostgres {
   }
 
   // refered in ../index.js as /compileMatchScore/...
-  async updateEventMatchScore(
-    idMatch,
-    pointsA,
-    penalitesA,
-    pointsB,
-    penalitesB
-  ) {
-    return await this.matchs.updateEventMatchScore(
-      idMatch,
-      pointsA,
-      penalitesA,
-      pointsB,
-      penalitesB
-    );
+  async updateEventMatchScore(idMatch,pointsA,penalitesA,pointsB,penalitesB) {
+    return await this.matchs.updateEventMatchScore(idMatch,pointsA,penalitesA,pointsB,penalitesB);
   }
 
   async removeEventMatch(idMatch) {

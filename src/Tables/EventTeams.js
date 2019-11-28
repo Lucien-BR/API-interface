@@ -39,7 +39,14 @@ module.exports = class Events {
     var temp = null;
     const client = await this.pool.connect();
     const queryText =
-      "SELECT * FROM EventTeams WHERE idEvent = $1 ORDER BY win ASC";
+      "WITH A1 AS (" +
+        "SELECT teams.idTeam, teams.nom AS teamName FROM teams"+
+        "),"+
+      "A2 AS ("+
+        "SELECT * FROM eventteams WHERE idEvent = $1"+
+      ")"+
+      "SELECT * FROM A1 JOIN EventTeams ON A1.idTeam = eventteams.idTeam"+
+        " ORDER BY win DESC";
     const queryValues = [idEvent];
     await client
       .query(queryText, queryValues)
@@ -132,15 +139,15 @@ module.exports = class Events {
   }
 
   // Metre a jour les statistiques d'une equipe pour un evenement
-  async updateTeamScore(idEvent, idTeam, win, lose, penalites) {
+  async updateTeamScore(idEvent, idTeam, win, lose, penalites, ptsPour, ptsContre) {
     var er = null;
     let myErr = await (async () => {
       const client = await this.pool.connect();
       try {
         await client.query("BEGIN");
         const queryText =
-          "UPDATE EventTeams SET win = $3, lose = $4, penalites = $5 WHERE idEvent = $1 AND idTeam = $2";
-        const queryValues = [idEvent, idTeam, win, lose, penalites];
+          "UPDATE EventTeams SET win = $3, lose = $4, penalites = $5, ptsPour = $6, ptsContre = $7 WHERE idEvent = $1 AND idTeam = $2";
+        const queryValues = [idEvent, idTeam, win, lose, penalites, ptsPour, ptsContre];
         await client.query(queryText, queryValues, (err, res) => {
           if (err != null) {
             console.log(err);

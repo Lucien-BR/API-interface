@@ -40,7 +40,7 @@ module.exports = class Users {
     var temp = null;
     const client = await this.pool.connect();
     await client
-      .query("SELECT * FROM Users WHERE status = 'B'")
+      .query("SELECT * FROM Users WHERE status = 'B' OR status = 'A'")
       .then(res => {
         temp = res.rows;
       })
@@ -72,11 +72,11 @@ module.exports = class Users {
   }
 
   // retourner un benevole
-  async getOneBenevole(email) {
+  async getBenevoleDemandes() {
     var temp = null;
     const client = await this.pool.connect();
-    const queryText = "SELECT * FROM Users WHERE email = $1 AND status = 'B'";
-    const queryValues = [email];
+    const queryText = "SELECT * FROM Users WHERE status = 'D'";
+    const queryValues = [];
     await client
       .query(queryText, queryValues)
       .then(res => {
