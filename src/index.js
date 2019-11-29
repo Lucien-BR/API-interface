@@ -97,7 +97,7 @@ app.post("/addUser/:email/:nom/:prenom/:telephone/:status/:psw/:Q1/:R1",async (r
     if (pgRes != null && pgRes2 != null) {
       code = 406;
     } // Not Acceptable
-    res.status(code).end([{ res: code, err: pgRes + pgRes2 }]);
+    res.status(code).json([{ res: code, err: pgRes + pgRes2 }]);
   }
 );
 
@@ -124,7 +124,7 @@ app.post("/updateStatus/:email/:status", async (req, res) => {
   if (pgRes != null && pgRes2 != null) {
     code          = 406; // Not Acceptable
   } 
-  res.status(code).end([{ res: code, err: pgRes + pgRes2 }]);
+  res.status(code).json([{ res: code, err: pgRes2 }]);
 });
 
 app.post("/removeUser/:email", async (req, res) => {
@@ -135,7 +135,7 @@ app.post("/removeUser/:email", async (req, res) => {
   if (pgRes[0] != null && pgRes2[0] != null) {
     code          = 409;
   } // Conflict
-  res.status(code).end([{ res: code, err: pgRes + pgRes2 }]);
+  res.status(code).json([{ res: code, err: pgRes + pgRes2 }]);
 });
 
 app.post("/updatePsw/:email/:psw", async (req, res) => {
@@ -479,8 +479,8 @@ app.post("/updateEventMatchInfo/:idMatch/:terrain/:date", async (req, res) => {
  */
 app.post("/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB/:overtime",
   async (req, res) => {
-    let specialRes = await MyPG.wasEventMatchUpdated(idMatch); // double checks for previous updates
     var idMatch   = req.params.idMatch;
+    let specialRes = await MyPG.wasEventMatchUpdated(idMatch); // double checks for previous updates
     var pointsA   = req.params.pointsA;
     var penalitesA= req.params.penalitesA;
     var pointsB   = req.params.pointsB;
@@ -488,7 +488,7 @@ app.post("/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB/
     var overtime  = req.params.overtime;
     let pgRes     = await MyPG.updateEventMatchScore(idMatch, pointsA, penalitesA, pointsB, penalitesB, overtime); 
     // this is the firs update refered in a comment
-    if (specialRes[1] != true) {
+    if (specialRes[0].wasupdated != true) {
       // Begin of update process of EventTeam Table (score)
       let pgRes2  = await MyPG.getOneMatch(idMatch);
       let res2 = pgRes2[0];
@@ -500,15 +500,15 @@ app.post("/compileMatchScore/:idMatch/:pointsA/:penalitesA/:pointsB/:penalitesB/
       var winA    = res3A.win;
       var loseA   = res3A.lose;
       var penA    = res3A.penalites + penalitesA; // increment
-      var ppA     = res3A.ptsPour + pointsA;
-      var pcA     = res3A.ptsContre + pointsB;
+      var ppA     = res3A.ptspour + pointsA;
+      var pcA     = res3A.ptscontre + pointsB;
       let pgRes3B = await MyPG.getOneEventTeam(idEvent, idTeamB);
       let res3B   = pgRes3B[0];
       var winB    = res3B.win;
       var loseB   = res3B.lose;
       var penB    = res3B.penalites + penalitesB;
-      var ppB     = res3B.ptsPour + pointsB;
-      var pcB     = res3B.ptsContre + pointsA;
+      var ppB     = res3B.ptspour + pointsB;
+      var pcB     = res3B.ptscontre + pointsA;
       if (pointsA > pointsB) {
         winA++;
         loseB++;
