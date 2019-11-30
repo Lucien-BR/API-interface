@@ -96,7 +96,6 @@ module.exports = class Events {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {
@@ -115,7 +114,7 @@ module.exports = class Events {
       try {
         await client.query("BEGIN");
         const queryText = "DELETE FROM Events * WHERE idEvent = $1";
-        const userValue = [id];
+        const queryValues = [id];
         await client.query(queryText, queryValues, (err, res) => {
           if (err != null) {
             console.log(err);
@@ -124,7 +123,6 @@ module.exports = class Events {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {

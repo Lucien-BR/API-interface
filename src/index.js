@@ -130,12 +130,15 @@ app.post("/updateStatus/:email/:status", async (req, res) => {
 app.post("/removeUser/:email", async (req, res) => {
   var email       = req.params.email;
   let pgRes       = await MyPG.removeCred(email);
+  console.time("Slept for"); // set time
+  await sleep(500); // was way to fast for some reasons..
+  console.timeEnd("Slept for"); // show time
   let pgRes2      = await MyPG.removeUser(email);
   var code        = 202; // Accepted
-  if (pgRes[0] != null && pgRes2[0] != null) {
+  if (pgRes != null && pgRes2 != null) {
     code          = 409;
   } // Conflict
-  res.status(code).json([{ res: code, err: pgRes + pgRes2 }]);
+  res.status(code).json([{ res: code, err: pgRes2 }]);
 });
 
 app.post("/updatePsw/:email/:psw", async (req, res) => {

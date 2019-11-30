@@ -107,7 +107,6 @@ module.exports = class Users {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {
@@ -136,7 +135,6 @@ module.exports = class Users {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {
@@ -164,7 +162,6 @@ module.exports = class Users {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {
@@ -182,9 +179,8 @@ module.exports = class Users {
       const client = await this.pool.connect();
       try {
         await client.query("BEGIN");
-        s;
         const queryText = "DELETE FROM Users * WHERE email = $1";
-        const userValue = [email];
+        const queryValues = [email];
         await client.query(queryText, queryValues, (err, res) => {
           if (err != null) {
             console.log(err);
@@ -193,7 +189,6 @@ module.exports = class Users {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {

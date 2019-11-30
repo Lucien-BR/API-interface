@@ -68,7 +68,6 @@ module.exports = class Teams {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {
@@ -96,7 +95,6 @@ module.exports = class Teams {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {
@@ -124,7 +122,6 @@ module.exports = class Teams {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {

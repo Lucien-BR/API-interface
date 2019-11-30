@@ -152,7 +152,6 @@ module.exports = class Creds {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {
@@ -180,7 +179,6 @@ module.exports = class Creds {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {
@@ -225,7 +223,7 @@ module.exports = class Creds {
       try {
         await client.query("BEGIN");
         const queryText = "DELETE FROM Credentials * WHERE email = $1";
-        const userValue = [email];
+        const queryValues = [email];
         await client.query(queryText, queryValues, (err, res) => {
           if (err != null) {
             console.log(err);
@@ -234,7 +232,6 @@ module.exports = class Creds {
         });
         await client.query("COMMIT");
       } catch (e) {
-        code = 1;
         await client.query("ROLLBACK");
         throw e;
       } finally {
