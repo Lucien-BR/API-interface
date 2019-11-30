@@ -90,7 +90,7 @@ app.post("/addUser/:email/:nom/:prenom/:telephone/:status/:psw/:Q1/:R1",async (r
     var R1        = req.params.R1;
     let pgRes     = await MyPG.addUser(email, nom, prenom, telephone, status);
     console.time("Slept for"); // set time
-    await sleep(500); // was way to fast for some reasons..
+    await sleep(300); // was way to fast for some reasons..
     console.timeEnd("Slept for"); // show time
     let pgRes2    = await MyPG.addCred(email, psw, status, Q1, R1);
     var code      = 201; // Created
@@ -131,7 +131,7 @@ app.post("/removeUser/:email", async (req, res) => {
   var email       = req.params.email;
   let pgRes       = await MyPG.removeCred(email);
   console.time("Slept for"); // set time
-  await sleep(500); // was way to fast for some reasons..
+  await sleep(300); // was way to fast for some reasons..
   console.timeEnd("Slept for"); // show time
   let pgRes2      = await MyPG.removeUser(email);
   var code        = 202; // Accepted
