@@ -111,6 +111,16 @@ module.exports = class Events {
   // Metre a jour les status d'une equipe pour un evenement
   async updateTeamStatus(idEvent, idTeam, estInscrit, aPaye, status_depot) {
     var er = null;
+    if (estInscrit == "T") {
+      estInscrit = true;
+    } else {
+      estInscrit = false;
+    }
+    if (aPaye == "T") {
+      aPaye = true;
+    } else {
+      aPaye = false;
+    }
     let myErr = await (async () => {
       const client = await this.pool.connect();
       try {
