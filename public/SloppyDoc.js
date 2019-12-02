@@ -2,7 +2,7 @@ var jon =
 {
     "Methods": "/",
     "Default_Methods": "/methods :: {...}",
-    "Info": "Voici notre API, version 2-28a, Deployment Patch",
+    "Info": "Voici notre API, version 2-28b, Deployment Patch",
     "Routes": "/gateways/<parameters>",
     "err_res": "res=code http. err == null OU err == 0. Si il y a une erreur (donc res = 400ish) err == stack tracer.",
     "Tables": {

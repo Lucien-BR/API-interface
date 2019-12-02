@@ -20,7 +20,7 @@ module.exports = class Matchs {
   async getAllEventMatchs(idEvent) {
     var temp = null;
     const client = await this.pool.connect();
-    const queryText = "SELECT * FROM Matchs WHERE idEvent = $1";
+    const queryText = "SELECT * FROM Matchs WHERE idEvent = $1 ORDER BY date ASC";
     const queryValues = [idEvent];
     await client
       .query(queryText, queryValues)
