@@ -57,7 +57,7 @@ module.exports = class Matchs {
   async getOneTeamEventMatchs(idEvent, idTeam) {
     var temp = null;
     const client = await this.pool.connect();
-    const queryText = "SELECT * FROM Matchs WHERE idEvent = $1 AND idTeam = $2";
+    const queryText = "SELECT * FROM Matchs WHERE idEvent = $1 AND (idTeamA = $2 OR idTeamB =$2)";
     const queryValues = [idEvent, idTeam];
     await client
       .query(queryText, queryValues)
